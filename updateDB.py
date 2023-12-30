@@ -126,6 +126,8 @@ def add_user(pseudo, mdp, email):
     VALUES ("{pseudo}", "{str(hashed_mdp)}", "{email}");
     """)
 
+    connexion.commit()
+
     c.close()
 
     global current_user
@@ -154,7 +156,7 @@ def add_recette(nom, ingredients, categories, submitted_by):
     """)
 
     result = c.fetchall()
-    print(result)
+    # print(result)
     if result[0][0] is not None:  # S'il y a déjà des recettes dans la DB
         last_id = result[0][0]
 
@@ -167,6 +169,9 @@ def add_recette(nom, ingredients, categories, submitted_by):
         INSERT INTO recettes
         VALUES ({0}, "{nom}", "{ingredients}", "{categories}", "{submitted_by}");
         """)
+
+    connexion.commit()
+
     c.close()
 
 
@@ -198,6 +203,8 @@ def add_favori(id_recette):
 
         c.execute(request)
 
+        connexion.commit()
+
         c.close()
 
 
@@ -228,6 +235,8 @@ def add_comment(recette_id, note, comment):
     values (?, ?, ?, ?);
     """, (current_user, recette_id, note, comment))
 
+    connexion.commit()
+
     c.close()
 
 # ------ Fonctions de modification de la DB ------ #
@@ -235,9 +244,10 @@ def add_comment(recette_id, note, comment):
 
 # ------ Tests ------ #
 
-# add_user("Alexis", "my_great_pwd", "alexis.mengual@orange.fr")
-# add_recette("pâtes au beurre", "pâtes;beurre", "plat de résistance", "alexis.mengual@orange.fr")
-# add_favori(0)
+# add_user("Jean", "pwd", "jean.martin@gmail.com")
+# add_recette("oeufs durs", "oeufs", "plat de résistance", "alexis.mengual@orange.fr")
+# set_current_user("jean.martin@gmail.com")
+# add_favori(1)
 # add_comment(0, 3, "basique mais fait le taf")
 
 
