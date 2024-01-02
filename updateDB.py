@@ -87,13 +87,13 @@ def check_favoris(email, id_recette):
 
     c.execute(f"""
     SELECT email FROM favoris
-    WHERE id_recette LIKE ?;
-    """, (id_recette))
+    WHERE id_recette LIKE {id_recette};
+    """)
 
     result = c.fetchall()
     c.close()
 
-    return email in result
+    return email in result[0]
 
 
 # ------ Fonctions d'ajout dans la DB ------ #
@@ -249,5 +249,6 @@ def add_comment(recette_id, note, comment):
 # set_current_user("jean.martin@gmail.com")
 # add_favori(1)
 # add_comment(0, 3, "basique mais fait le taf")
+
 
 
