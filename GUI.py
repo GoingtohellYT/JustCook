@@ -54,7 +54,8 @@ def test():
 screen = Tk()
 screen.title("JustCook")
 screen.geometry("1920x1080")
-screen.resizable(1,1)
+screen.attributes('-fullscreen',True)#met l'écren en fullscreen
+screen.resizable(0,0)
 screen.configure(background=bg_color)
 
 
