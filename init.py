@@ -25,7 +25,9 @@ c.execute("""
     id INTEGER PRIMARY KEY,
     nom TEXT,
     ingredients TEXT,
+    recette TEXT,
     categories TEXT,
+    image TEXT,
     submitted_by TEXT,
     FOREIGN KEY (submitted_by) REFERENCES users (email));
 """)
