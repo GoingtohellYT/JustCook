@@ -128,20 +128,27 @@ def add_user(pseudo, mdp, email):
 
     connexion.commit()
 
+    c.execute(f"""
+    INSERT INTO user_settings
+    VALUES ({0}, {0}, "{email}")
+    """)
+
+    connexion.commit()
+
     c.close()
 
     global current_user
     current_user = email
 
 
-def add_recette(nom, ingredients, categories, submitted_by):
+def add_recette(nom, ingredients, recette, categories, image, submitted_by):
     """
     Fonction qui ajoute une recette à la db
 
     Retourne :
         Rien
     Pré-conditions :
-        tous les paramètres sont du type string (les ingredients sont séparés par des ';'
+        tous les paramètres sont du type string (les ingredients sont séparés par des ';')
     """
     assert type(nom) is str
     assert type(ingredients) is str
@@ -162,12 +169,12 @@ def add_recette(nom, ingredients, categories, submitted_by):
 
         c.execute(f"""
         INSERT INTO recettes
-        values (?, ?, ?, ?, ?);
-        """, (last_id + 1, nom, ingredients, categories, submitted_by))
+        values (?, ?, ?, ?, ?, ?, ?);
+        """, (last_id + 1, nom, ingredients, recette, categories, image, submitted_by))
     else:  # Si la table recettes est vide
         c.execute(f"""
         INSERT INTO recettes
-        VALUES ({0}, "{nom}", "{ingredients}", "{categories}", "{submitted_by}");
+        VALUES ({0}, "{nom}", "{ingredients}", "{recette}", "{categories}", "{image}", "{submitted_by}");
         """)
 
     connexion.commit()
@@ -244,11 +251,13 @@ def add_comment(recette_id, note, comment):
 
 # ------ Tests ------ #
 
-# add_user("Jean", "pwd", "jean.martin@gmail.com")
-# add_recette("oeufs durs", "oeufs", "plat de résistance", "alexis.mengual@orange.fr")
-# set_current_user("jean.martin@gmail.com")
-# add_favori(1)
-# add_comment(0, 3, "basique mais fait le taf")
+add_user("test", "test", "test.test@gmail.com")
+add_recette("Pâtes au beurre", "pâtes;eau;beurre", "faire bouillir de l'eau;mettre les pâtes;ajouter un peu de beurre quand le tout est cuit", "Pâtes", "./img_recettes/pates_au_beurre.jpg", "test.test@gmail.com")
+add_recette("Pâtes à l'huile", "pâtes;eau;huile", "faire bouillir de l'eau;faire cuire les pâtes;ajouter un peu d'huile avant de servir", "Pâtes", "./img_recettes/pates_huile.jpg", "test.test@gmail.com")
+add_user("Alex", "Alex", "alex.bonjour@gmail.com")
+set_current_user("alex.bonjour@gmail.com")
+add_comment(0, 4, "Classique mais ça fait toujours plaisir !")
+add_favori(1)
 
 
 

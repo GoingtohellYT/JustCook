@@ -14,8 +14,8 @@ c.execute("""
 
 c.execute("""
     CREATE TABLE IF NOT EXISTS user_settings(
-    dark_mode BOOLEAN,
-    stay_logged_in BOOLEAN,
+    dark_mode INT,
+    stay_logged_in INT,
     email TEXT PRIMARY KEY,
     FOREIGN KEY (email) REFERENCES users (email));
 """)
