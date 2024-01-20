@@ -242,6 +242,7 @@ class Login:
 
         if login_try[0]:
             print("logged in")
+            self.root.destroy()
             if login_try[1]:
                 test.nightmode()
                 print("switch to nightmode")
