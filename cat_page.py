@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import requestDB
 import recipy_page
 
@@ -37,6 +38,19 @@ class CategoryPage:
 
         self.create_rows()
 
+        self.header = Frame(self.screen, background=self.main_color)
+        self.main_widgets.append(self.header)
+        self.header.grid(row=0, column=0, columnspan=4)
+
+        self.lbl_logo = ttk.Label(self.screen, text="JustCook")
+        self.main_widgets.append(self.lbl_logo)
+        self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
+        self.lbl_logo.config(background=self.main_color, padding=(100, 0), font=("Z003", 45))
+
+        self.recette_cherchee = ""
+        self.barre_recherche = Entry(self.screen, textvariable=self.recette_cherchee, background="white")
+        self.barre_recherche.grid(row=0, column=2, columnspan=2, padx=250, sticky=EW)
+        
         self.screen.mainloop()
 
     def nightmode(self):
@@ -84,7 +98,7 @@ class CategoryPage:
                 for j in range(4):
                     if 2*i+j < len(recettes):
                         recette = Button(self.screen, text=recettes[2*i+j][0], command=lambda m=recettes[2*i+j][1]: self.go_to_selected_recipy(m))
-                        recette.grid(column=j, row=i)
+                        recette.grid(column=j, row=i+1)
 
     def go_to_selected_recipy(self, recette_id):
         """
