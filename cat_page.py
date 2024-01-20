@@ -58,7 +58,7 @@ class CategoryPage:
         self.barre_recherche.grid(row=0, column=2, columnspan=2, padx=250, sticky=EW)
 
 #________________Contenu principal de la fenêtre________________#
-
+        
         self.recette_frame = Frame(self.screen,background=self.bg_color)
         self.background_widgets.append(self.recette_frame)
         self.recette_frame.grid(row=1,column=0,columnspan=4,sticky=NSEW)
@@ -66,8 +66,10 @@ class CategoryPage:
         self.recette_frame.columnconfigure(1, weight=1)
         self.recette_frame.columnconfigure(2, weight=1)
         self.recette_frame.columnconfigure(3, weight=1)
-        
-
+        """
+        self.test_image = PhotoImage(file="img_recettes/pates_au_beurre.png")
+        self.test_btn = Button(self.recette_frame,text="pâtes au beurre",image=self.test_image,compound=TOP,command=lambda m=0: self.go_to_selected_recipy(m)).grid(row=1,column=1)
+        """
 #________________Le footer________________#
 
         self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, command=self.screen.destroy)
@@ -128,12 +130,13 @@ class CategoryPage:
                 self.recette_frame.rowconfigure(i)
                 for j in range(4):
                     if 2*i+j < len(recettes):
-                        image_recette = PhotoImage(file=recettes[2*i+j][2])
-                        print(image_recette)
-                        image_bouton = Button(self.recette_frame,image=image_recette,command=lambda m=recettes[2*i+j][1]: self.go_to_selected_recipy(m))
-                        image_bouton.grid(column=j,row=i+1,sticky=NSEW,pady=(15,0),padx=15)
-                        recette = Button(self.recette_frame,text=recettes[2*i+j][0], command=lambda m=recettes[2*i+j][1]: self.go_to_selected_recipy(m))
-                        recette.grid(column=j, row=i+2,pady=(0,15),padx=15,sticky=NSEW)
+                        self.image_recette = PhotoImage(file=recettes[2*i+j][2])
+                        print(self.image_recette)
+                        self.image_bouton = ttk.Button(self.recette_frame,text="pâtes au beurre",image=self.image_recette,compound=TOP,command=lambda m=recettes[2*i+j][1]: self.go_to_selected_recipy(m)).grid(row=1,column=1)
+                        print(self.image_bouton)
+                        self.image_bouton.grid(row=2*i+j,column=j)
+                        #recette = Button(self.recette_frame,text=recettes[2*i+j][0], command=lambda m=recettes[2*i+j][1]: self.go_to_selected_recipy(m))
+                        #recette.grid(column=j, row=i+2,pady=(0,15),padx=15,sticky=NSEW)
 
     def go_to_selected_recipy(self, recette_id):
         """
@@ -141,4 +144,4 @@ class CategoryPage:
         """
         recipy_page.RecipyPage(recette_id)
 
-test = CategoryPage("Pâtes")
+#test = CategoryPage("Pâtes")
