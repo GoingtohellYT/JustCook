@@ -107,7 +107,7 @@ class CategoryPage:
         """
         recettes = requestDB.request.get_recettes("recettes", "nom, id, image", self.category)  # appel la fonction de Matteo
         print(recettes)
-        nb_lignes = len(recettes) / 4  # on affiche 4 recettes
+        nb_lignes = len(recettes) // 4  # on affiche 4 recettes
 
         if len(recettes) != 0:
             if int(nb_lignes) != float(nb_lignes):
