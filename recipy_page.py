@@ -26,7 +26,7 @@ class RecipyPage:
         self.screen.geometry("1280x720")
         self.screen.resizable(0, 0)
         self.screen.configure(background=self.bg_color)
-
+        self.background_widgets.append(self.screen)
 
         self.screen.rowconfigure(0,weight=0)
         self.screen.rowconfigure(1,weight = 8)
@@ -34,7 +34,11 @@ class RecipyPage:
 
         self.screen.columnconfigure(0,weight=1)
         self.screen.columnconfigure(1,weight=6)
+        self.screen.columnconfigure(2,weight=0)
+        self.screen.columnconfigure(3,weight=0)
 
+#________________Le header________________#
+        
         self.header = Frame(self.screen, background=self.main_color)
         self.main_widgets.append(self.header)
         self.header.grid(row=0, column=0, columnspan=4)
@@ -48,19 +52,31 @@ class RecipyPage:
         self.barre_recherche = Entry(self.screen, textvariable=self.recette_cherchee, background="white")
         self.barre_recherche.grid(row=0, column=2, columnspan=2, padx=250, sticky=EW)
 
+#________________Contenu principal de la fenêtre________________#
+
         self.side_panel = Frame(self.screen,background=self.main_color)
         self.main_widgets.append(self.side_panel)
         self.side_panel.grid(column=0,row=1,sticky=NSEW,rowspan=2)
 
-
+        self.recette_frame = Frame(self.screen,background="cyan")
+        self.background_widgets.append(self.recette_frame)
+        self.recette_frame.grid(row=1,column=1,sticky=NSEW,columnspan=3)
+        self.recette_frame.columnconfigure(0,weight=0)
+        self.show_recipy()
+       
+#________________Le footer________________#
+       
         self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, command=self.screen.destroy)
         self.main_widgets.append(self.btn_footer)
-        self.btn_footer.grid(column=2, row=5, sticky=NSEW, columnspan=2)
+        self.btn_footer.grid(column=2, row=2, sticky=NSEW, columnspan=2)
 
         self.btn_night = Button(self.screen, text='Nightmode', command=self.screen_mode_update,background=self.main_color)
         self.main_widgets.append(self.btn_night)
-        self.btn_night.grid(column=0, row=5, columnspan=2, sticky=NSEW)
+        self.btn_night.grid(column=0, row=2, columnspan=2, sticky=NSEW)
+
         self.screen.mainloop()
+
+##=================================================================##LES FONCTIONS##=================================================================##
 
     def nightmode(self):
         if not self.is_night_mode:
@@ -91,6 +107,26 @@ class RecipyPage:
         Fonction qui permet de récupérer les informations d'une recette
         """
         infos = requestDB.request.get_recette_info(self.id)
+        return infos
+    
+    def show_recipy(self):
+        """
+        Fonction qui affiche la recette
+        """
+        infos = self.get_recipy_infos()
+        ingredients = infos[2].split(";")
+        etapes = infos[3].split(";")
+        for i in range(len(etapes)+len(ingredients)):
+            if i < len(ingredients):
+                self.recette_frame.rowconfigure(i,weight=0)
+                ing = Label(self.recette_frame,text=ingredients[i])
+                ing.grid(column=0,row=i)
+            elif i-len(ingredients) < len(etapes):
+                self.recette_frame.rowconfigure(i,weight=0)
+                etp = Label(self.recette_frame,text=etapes[i-len(ingredients)])
+                etp.grid(column=0,row=i,sticky=NSEW)
+
+
 
 
 #recipy = RecipyPage(0)
