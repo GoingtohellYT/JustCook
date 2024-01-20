@@ -250,7 +250,7 @@ def add_comment(recette_id, note, comment):
 
 
 # ------ Tests ------ #
-
+"""
 add_user("test", "test", "test.test@gmail.com")
 add_recette("Pâtes au beurre", "pâtes;eau;beurre", "faire bouillir de l'eau;mettre les pâtes;ajouter un peu de beurre quand le tout est cuit", "Pâtes", "./img_recettes/pates_au_beurre.jpg", "test.test@gmail.com")
 add_recette("Pâtes à l'huile", "pâtes;eau;huile", "faire bouillir de l'eau;faire cuire les pâtes;ajouter un peu d'huile avant de servir", "Pâtes", "./img_recettes/pates_huile.jpg", "test.test@gmail.com")
@@ -258,6 +258,7 @@ add_user("Alex", "Alex", "alex.bonjour@gmail.com")
 set_current_user("alex.bonjour@gmail.com")
 add_comment(0, 4, "Classique mais ça fait toujours plaisir !")
 add_favori(1)
+"""
 
 
 
