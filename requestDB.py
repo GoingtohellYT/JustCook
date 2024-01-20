@@ -11,10 +11,18 @@ class Request:
         self.c = self.connexion.cursor()
 
     def give(self, table, nom):
+        """
+        Fonction qui permet de faire des requêtes sql à une base de donnée quelconque.
+        Prend en paramètre :
+            -Le nom de la table
+            -Un ou des attributs de la table
+        Renvoie :
+            -Une liste avec les données demandées
+        """
         self.c.execute(f"SELECT {nom} FROM {table};")
         return self.c.fetchall()
 
-    # fonction specifique
+    # fonction spécifique
     def get_recettes(self, table, element, recette):
         """
         Fonction qui permet d'obtenir toutes les recettes d'une catégorie
@@ -31,6 +39,14 @@ class Request:
 
     # fonction login(email, mdp)
     def login(self, email, mdp):
+        """
+        La fonction permet de vérifier si un utilisateur à rentrer le bon email et le bon mot de passe.
+        Prend en paramètre :
+            - email : email rentré par l'utilisateur
+            - mdp : mot de passe rentré par l'utilisateur
+        Renvoie :
+            - un boolen : Vrai si tout correspond False sinon
+        """
         if check_user(email):
             self.c.execute(f"SELECT mdp FROM users WHERE email LIKE '%{email}%';")
             mdp_hash = self.c.fetchall()[0][0]
