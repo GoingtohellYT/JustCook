@@ -86,7 +86,7 @@ class Homepage:
         self.btn_pates.grid(column=1, row=2, sticky=NSEW, pady=(0, 5), padx=30)
 
         self.img_viande = PhotoImage(file="./images/viande_modified.png")
-        viande = Button(self.screen, image=self.img_viande, command=self.see_viandes).grid(column=2, row=1, sticky=NSEW, pady=(15, 0), padx=30)
+        self.viande = Button(self.screen, image=self.img_viande, command=self.see_viandes).grid(column=2, row=1, sticky=NSEW, pady=(15, 0), padx=30)
 
         self.btn_viande = Button(self.screen, text="Viandes", bg=self.main_color, command=self.see_viandes)
         self.main_widgets.append(self.btn_viande)
