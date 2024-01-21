@@ -37,6 +37,17 @@ class Request:
         self.c.execute(f"SELECT * FROM recettes WHERE id = {recette_id}")
         return self.c.fetchall()[0]
 
+    def get(self, attribut, table,condition1,  condition2):
+        """
+        Fonction qui permet d'acceder à la base de données en fonction d'une condition qui dépend de l'attribut
+        :param attribut:
+        :param table:
+        :param condition:
+        :return:
+        """
+        self.c.execute(f"SELECT {attribut} FROM {table} WHERE {condition1} = {condition2}")
+        return self.c.fetchall()
+
     # fonction login(email, mdp)
     def login(self, email, mdp):
         """
