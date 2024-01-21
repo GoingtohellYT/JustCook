@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 
 
 class CategoryPage:
-    def __init__(self, category):
+    def __init__(self, category, mode):
         self.category = category
 
         self.day_sc_bg = "#a8bfe0"
@@ -21,7 +21,7 @@ class CategoryPage:
         self.bg_color = self.day_sc_bg
         self.main_color = self.day_main
 
-        self.is_night_mode = False
+        self.is_night_mode = mode
 
         self.main_widgets = []
         self.background_widgets = []
@@ -40,6 +40,10 @@ class CategoryPage:
         self.screen.rowconfigure(0, weight=0)
         self.screen.rowconfigure(1, weight=8)
         self.screen.rowconfigure(2, weight=0)
+
+        if self.is_night_mode:
+            self.is_night_mode = False
+            self.screen_mode_update()
 
         ##=================================================================##LES WIDGETS##=================================================================##
 
@@ -162,6 +166,6 @@ class CategoryPage:
         """
         Fonction qui permet d'afficher la page de la recette choisie par l'utilisateur
         """
-        recipy_page.RecipyPage(recette_id)
+        recipy_page.RecipyPage(recette_id, self.is_night_mode)
 
 # test = CategoryPage("Pâtes")

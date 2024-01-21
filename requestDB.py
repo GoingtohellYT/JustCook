@@ -66,8 +66,14 @@ class Request:
             if ph.verify(hash=mdp_hash, password=mdp):
                 self.c.execute(f"SELECT dark_mode FROM user_settings WHERE email LIKE '%{email}%';")
                 set_current_user(email)
-                if self.c.fetchall()[0][0] == 0:
+                darkmode = self.c.fetchall()[0][0]
+                print(darkmode)
+                if darkmode == 0:
                     return True, False
+                elif darkmode == 1:
+                    return True, True
+            else:
+                return False, False
 
 
 request = Request('websiteDB.db')
