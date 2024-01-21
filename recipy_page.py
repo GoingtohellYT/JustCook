@@ -58,10 +58,26 @@ class RecipyPage:
         self.main_widgets.append(self.side_panel)
         self.side_panel.grid(column=0,row=1,sticky=NSEW,rowspan=2)
 
-        self.recette_frame = Frame(self.screen,background="cyan")
+        self.frame_scroll = Frame(self.screen)
+        self.frame_scroll.grid(row=1, column=0, columnspan=4, sticky=NSEW)
+
+        self.canvas = Canvas(self.frame_scroll,background=self.bg_color)
+        self.canvas.pack(side=LEFT,fill=BOTH,expand=1)
+
+        self.scrollbar = Scrollbar(self.frame_scroll,orient=VERTICAL,command=self.canvas.yview)
+        self.scrollbar.pack(side=RIGHT,fill=Y)
+
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.bind('<Configure>',lambda e:self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+
+        self.recette_frame = Frame(self.canvas,background=self.bg_color)
         self.background_widgets.append(self.recette_frame)
-        self.recette_frame.grid(row=1,column=1,sticky=NSEW,columnspan=3)
+        self.recette_frame.pack(fill=BOTH,expand=1)
         self.recette_frame.columnconfigure(0,weight=0)
+
+        self.canvas.create_window((0,0),window=self.recette_frame, anchor="nw")
+
         self.show_recipy()
        
 #________________Le footer________________#
@@ -113,18 +129,38 @@ class RecipyPage:
         """
         Fonction qui affiche la recette
         """
-        infos = self.get_recipy_infos()
-        ingredients = infos[2].split(";")
-        etapes = infos[3].split(";")
-        for i in range(len(etapes)+len(ingredients)):
-            if i < len(ingredients):
+        self.infos = self.get_recipy_infos()
+        self.ingredients = self.infos[2].split(";")
+        etapes = self.infos[3].split(";")
+        
+        self.titre_recette = Label(self.recette_frame,text=self.infos[1],font=("MV Boli",32),background=self.bg_color)
+        self.background_widgets.append(self.titre_recette)
+        self.titre_recette.pack(side=TOP,fill=BOTH,expand=1)
+        
+        self.image_rct = PhotoImage(file=self.infos[5])
+        self.img_show = Label(self.recette_frame,image=self.image_rct,background=self.bg_color)
+        self.background_widgets.append(self.img_show)
+        self.img_show.pack(side=TOP,fill=BOTH,expand=1)
+
+        for i in range(len(etapes)+len(self.ingredients)):
+            if i==0:
+                self.ing_titre = Label(self.recette_frame,text="Ingrédients:",font=("MV Boli",18),background=self.bg_color)
+                self.background_widgets.append(self.ing_titre)
+                self.ing_titre.pack(side=TOP,fill=BOTH,expand=1)
+            elif i == len(self.ingredients):
+                self.etp_titre = Label(self.recette_frame,text="Étapes:",font=("MV Boli",18),background=self.bg_color)
+                self.background_widgets.append(self.etp_titre)
+                self.etp_titre.pack(side=TOP,fill=BOTH,expand=1)
+            if i < len(self.ingredients):
                 self.recette_frame.rowconfigure(i,weight=0)
-                ing = Label(self.recette_frame,text=ingredients[i])
-                ing.grid(column=0,row=i)
-            elif i-len(ingredients) < len(etapes):
+                self.ing = Label(self.recette_frame,text=self.ingredients[i],background=self.bg_color)
+                self.background_widgets.append(self.ing)
+                self.ing.pack(side=TOP,fill=BOTH,expand=1)
+            elif i-len(self.ingredients) < len(etapes):
                 self.recette_frame.rowconfigure(i,weight=0)
-                etp = Label(self.recette_frame,text=etapes[i-len(ingredients)])
-                etp.grid(column=0,row=i,sticky=NSEW)
+                self.etp = Label(self.recette_frame,text=etapes[i-len(self.ingredients)],background=self.bg_color)
+                self.background_widgets.append(self.etp)
+                self.etp.pack(side=TOP,fill=BOTH,expand=1)
 
 
 
