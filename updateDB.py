@@ -246,7 +246,34 @@ def add_comment(recette_id, note, comment):
 
     c.close()
 
+
 # ------ Fonctions de modification de la DB ------ #
+def change_user_setting(setting, value):
+    """
+    Fonction qui permet de changer un réglage utilisateur dans la DB
+
+    Retourne :
+        Rien
+    Pré-conditions :
+        setting est du type str et représente un réglage qui existe dans la DB
+        value est du type int et varie entre 0 et 1 (False et True)
+    """
+    assert type(setting) is str and setting in ["dark_mode", "stay_logged_in"], "setting n'est pas une valeur acceptée"
+    assert type(value) is int and (value == 0 or value == 1), "value n'a pas une valeur acceptée"
+
+    global current_user
+
+    connexion = sqlite3.connect("websiteDB.db")
+    c = connexion.cursor()
+
+    c.execute(f"""
+    UPDATE user_settings
+    SET "{setting}" = {value}
+    WHERE email = "{current_user}";
+    """)
+
+    connexion.commit()
+    c.close()
 
 
 # ------ Tests ------ #

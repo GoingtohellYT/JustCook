@@ -2,12 +2,13 @@ from tkinter import *
 from tkinter import ttk
 import requestDB
 import cat_page
-# import updateDB
+from settings import Settings
+import updateDB
+from requestDB import request
 
 
 # =============================================================================#Les Variables#=========================================================================================================#
 class Homepage:
-
     def __init__(self):
 
         self.day_sc_bg = "#a8bfe0"
@@ -189,7 +190,10 @@ class Homepage:
         Tk.after(self.screen, 500, self.nightmode)
 
     def login(self):
-        Login(self)
+        if updateDB.current_user is None:
+            Login(self)
+        else:
+            Settings(self.is_night_mode)
 
     def see_entrees(self):
         cat_page.CategoryPage("Entrée", self.is_night_mode)
@@ -256,6 +260,7 @@ class Login:
         login_try = requestDB.request.login(email, pwd)
 
         if login_try[0]:
+            updateDB.current_user = email
             print("logged in")
             if login_try[1]:
                 self.homepage.screen_mode_update()
