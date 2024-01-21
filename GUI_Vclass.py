@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import showinfo
+
 import requestDB
 import cat_page
 from tkinter.font import Font
@@ -243,6 +245,8 @@ class Login:
         if login_try[0]:
             print("logged in")
             self.root.destroy()
+            showinfo("Window", "You log in!")
+            
             if login_try[1]:
                 test.nightmode()
                 print("switch to nightmode")
