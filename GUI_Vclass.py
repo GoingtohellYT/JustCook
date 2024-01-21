@@ -198,7 +198,7 @@ class Homepage:
 
     def see_poissons(self):
         self.screen.destroy()
-        CategoryPage("Soupes")
+        CategoryPage("Poissons")
 
     def see_legumes(self):
         self.screen.destroy()
