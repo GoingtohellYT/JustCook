@@ -156,6 +156,8 @@ class Homepage:
         self.main_widgets.append(self.btn_night)
         self.btn_night.grid(column=0, row=5, columnspan=2, sticky=NSEW)
 
+        self.check_auto_login()  # On vérifie la connexion auto d'un user
+
         self.screen.mainloop()
 
     ##=================================================================##LES FONCTIONS##=================================================================##
@@ -194,6 +196,21 @@ class Homepage:
             Login(self)
         else:
             Settings(self.is_night_mode)
+
+    def check_auto_login(self):
+        """
+        Fonction qui permet de vérifier si un utilisateur a la connexion automatique activée
+        et de le connecter si c'est le cas
+        """
+        try:
+            potential_user = request.get("email", "user_settings", "stay_logged_in", 1)[0][0]
+            if updateDB.check_user(potential_user):
+                updateDB.set_current_user(potential_user)
+                print("Connexion automatique !")
+                if request.get("dark_mode", "user_settings", "email", f'"{potential_user}"')[0][0] == 1:
+                    self.screen_mode_update()  # On active le nightmode si c'est dans ses préférences
+        except IndexError:
+            print("Aucun utilisateur n'a la connexion automatique d'activée")
 
     def see_entrees(self):
         cat_page.CategoryPage("Entrée", self.is_night_mode)
@@ -260,7 +277,7 @@ class Login:
         login_try = requestDB.request.login(email, pwd)
 
         if login_try[0]:
-            updateDB.current_user = email
+            updateDB.set_current_user(email)
             print("logged in")
             if login_try[1]:
                 self.homepage.screen_mode_update()

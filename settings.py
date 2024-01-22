@@ -64,12 +64,26 @@ class Settings:
         self.corps.columnconfigure(1)
 
         self.corps.rowconfigure(0)
+        self.corps.rowconfigure(1)
+        self.corps.rowconfigure(2)
 
+        # Bouton nightmode
         self.mode_pref = Label(self.corps, text="Nightmode par défaut")
         self.mode_pref.grid(row=0, column=0, padx=12)
 
         self.set_mode_pref = Button(self.corps, text="", command=lambda: self.toggle("mode"))
         self.set_mode_pref.grid(row=0, column=1, padx=12)
+
+        # Bouton stay_logged_in
+        self.stay_logged_pref = Label(self.corps, text="Rester connecté")
+        self.stay_logged_pref.grid(row=1, column=0, padx=12)
+
+        self.set_stay_logged = Button(self.corps, text="", command=lambda: self.toggle("stay_logged"))
+        self.set_stay_logged.grid(row=1, column=1, padx=12)
+
+        # Bouton déconnexion
+        self.deconnect = Button(self.corps, text="Déconnexion", command=self.deconnect)
+        self.deconnect.grid(row=2, column=0, pady=12)
 
         self.set_default_values()
 
@@ -117,15 +131,25 @@ class Settings:
         Fonction qui récupère les paramètres de l'utilisateur pour afficher les valeurs par défaut correspondantes
         """
         default_mode = request.get('dark_mode', "user_settings", "email", f'"{updateDB.current_user}"')[0][0]  # Pour le dark mode
+        stay_logged = request.get('stay_logged_in', "user_settings", "email", f'"{updateDB.current_user}"')[0][0]  # Pour le stay logged in
+        print(default_mode, stay_logged)
+
         if default_mode == 1:
             self.set_mode_pref.config(text="Oui")
         elif default_mode == 0:
             self.set_mode_pref.config(text="Non")
 
+        if stay_logged == 1:
+            self.set_stay_logged.config(text="Oui")
+        elif stay_logged == 0:
+            self.set_stay_logged.config(text="Non")
+
     def toggle(self, btn):
         """
         Fonction qui permet de changer le réglage par défaut
         """
+        assert type(btn) is str and btn in ["mode", "stay_logged"]
+
         if btn == "mode":
             if self.set_mode_pref.config('text')[-1] == "Oui":
                 updateDB.change_user_setting("dark_mode", 0)
@@ -133,3 +157,22 @@ class Settings:
             elif self.set_mode_pref.config('text')[-1] == "Non":
                 updateDB.change_user_setting("dark_mode", 1)
                 self.set_mode_pref.config(text="Oui")
+        else:
+            if self.set_stay_logged.config('text')[-1] == "Oui":
+                updateDB.change_user_setting("stay_logged_in", 0)
+                self.set_stay_logged.config(text="Non")
+            elif self.set_stay_logged.config('text')[-1] == "Non":
+                updateDB.change_user_setting("stay_logged_in", 1)
+                self.set_stay_logged.config(text="Oui")
+
+    def deconnect(self):
+        """
+        Fonction qui déconnecte l'utilisateur
+            - remet stay_logged_in sur False
+            - met current_user à None
+            - ferme la fenêtre des réglages utilisateurs
+        """
+        updateDB.change_user_setting("stay_logged_in", 0)
+        updateDB.current_user = None
+        print("logged out")
+        self.screen.destroy()
