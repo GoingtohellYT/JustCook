@@ -61,13 +61,13 @@ class Homepage:
         self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
         self.lbl_logo.config(background=self.main_color, padding=(100, 0), font=("Z003", 45))
 
-        self.recette_cherchee = ""
-        self.barre_recherche = Entry(self.screen, textvariable=self.recette_cherchee, background="white")
-        self.barre_recherche.grid(row=0, column=2, columnspan=2, padx=250, sticky=EW)
-
         self.img_user = PhotoImage(file="./images/user.png")
         self.user = Button(self.screen, image=self.img_user, background='white', command=self.login)
         self.user.grid(column=3, row=0)
+
+        self.img_add = PhotoImage(file="./images/add.png")
+        self.add = Button(self.screen, image=self.img_add, background="red", command=self.add_recette)
+        self.add.grid(column=2, row=0)
 
         # ________________Contenu principal de la fenêtre________________#
 
@@ -81,34 +81,27 @@ class Homepage:
         self.btn_entrees.grid(column=0, row=2, sticky=NSEW, pady=(0, 5), padx=30)
 
         self.img_pates = PhotoImage(file="./images/pates.png")
-        self.pates = Button(self.screen, image=self.img_pates, command=self.see_pates).grid(column=1, row=1,
-                                                                                            sticky=NSEW, pady=(15, 0),
-                                                                                            padx=30)
+        self.pates = Button(self.screen, image=self.img_pates, command=self.see_pates).grid(column=1, row=1,sticky=NSEW, pady=(15, 0),padx=30)
 
         self.btn_pates = Button(self.screen, text="Pâtes", bg=self.main_color, command=self.see_pates)
         self.main_widgets.append(self.btn_pates)
         self.btn_pates.grid(column=1, row=2, sticky=NSEW, pady=(0, 5), padx=30)
 
         self.img_viande = PhotoImage(file="./images/viande_modified.png")
-        viande = Button(self.screen, image=self.img_viande, command=self.see_viandes).grid(column=2, row=1, sticky=NSEW,
-                                                                                           pady=(15, 0), padx=30)
+        self.viande = Button(self.screen, image=self.img_viande, command=self.see_viandes).grid(column=2, row=1, sticky=NSEW,pady=(15, 0), padx=30)
 
         self.btn_viande = Button(self.screen, text="Viandes", bg=self.main_color, command=self.see_viandes)
         self.main_widgets.append(self.btn_viande)
         self.btn_viande.grid(column=2, row=2, sticky=NSEW, pady=(0, 5), padx=30)
 
         self.img_poisson = PhotoImage(file="./images/poisson_modified.png")
-        self.poisson = Button(self.screen, image=self.img_poisson, command=self.see_poissons).grid(column=3, row=1,
-                                                                                                   sticky=NSEW,
-                                                                                                   pady=(15, 0),
-                                                                                                   padx=30)
+        self.poisson = Button(self.screen, image=self.img_poisson, command=self.see_poissons).grid(column=3, row=1,sticky=NSEW,pady=(15, 0),padx=30)
 
         self.btn_poisson = Button(self.screen, text="Poissons", bg=self.main_color, command=self.see_poissons)
         self.main_widgets.append(self.btn_poisson)
         self.btn_poisson.grid(column=3, row=2, sticky=NSEW, pady=(0, 5), padx=30)
 
-        self.frm = Frame(self.screen,
-                         background=self.bg_color)  # Permet d'avoir 3 boutons sur la deuxième ligne sans que ça soit aligné avec ceux de la première ligne
+        self.frm = Frame(self.screen,background=self.bg_color)  # Permet d'avoir 3 boutons sur la deuxième ligne sans que ça soit aligné avec ceux de la première ligne
         self.background_widgets.append(self.frm)
         self.frm.grid(row=4, column=0, columnspan=4, sticky=NSEW)
 
@@ -120,26 +113,21 @@ class Homepage:
         self.frm.rowconfigure(1, weight=1)
 
         self.img_legumes = PhotoImage(file="./images/légumes.png")
-        self.legumes = Button(self.frm, image=self.img_legumes, command=self.see_legumes).grid(column=0, row=0,
-                                                                                               sticky=NSEW, pady=(5, 0),
-                                                                                               padx=30)
+        self.legumes = Button(self.frm, image=self.img_legumes, command=self.see_legumes).grid(column=0, row=0, sticky=NSEW, pady=(5, 0), padx=30)
 
         self.btn_legumes = Button(self.frm, text="Légumes", bg=self.main_color, command=self.see_legumes)
         self.main_widgets.append(self.btn_legumes)
         self.btn_legumes.grid(column=0, row=1, sticky=NSEW, pady=(0, 15), padx=30)
 
         self.img_dessert = PhotoImage(file="./images/dessert.png")
-        self.dessert = Button(self.frm, image=self.img_dessert, command=self.see_desserts).grid(column=1, row=0,
-                                                                                                sticky=NSEW,
-                                                                                                pady=(5, 0), padx=30)
+        self.dessert = Button(self.frm, image=self.img_dessert, command=self.see_desserts).grid(column=1, row=0,sticky=NSEW,pady=(5, 0), padx=30)
 
         self.btn_desserts = Button(self.frm, text="Desserts", bg=self.main_color, command=self.see_desserts)
         self.main_widgets.append(self.btn_desserts)
         self.btn_desserts.grid(column=1, row=1, sticky=NSEW, pady=(0, 15), padx=30)
 
         self.img_soupe = PhotoImage(file="images/soupe.png")
-        self.soupe = Button(self.frm, image=self.img_soupe, command=self.see_soupes).grid(column=2, row=0, sticky=NSEW,
-                                                                                          pady=(5, 0), padx=30)
+        self.soupe = Button(self.frm, image=self.img_soupe, command=self.see_soupes).grid(column=2, row=0, sticky=NSEW, pady=(5, 0), padx=30)
 
         self.btn_soupe = Button(self.frm, text="Soupes", bg=self.main_color, command=self.see_soupes)
         self.main_widgets.append(self.btn_soupe)
@@ -196,7 +184,9 @@ class Homepage:
             Login(self)
         else:
             Settings(self.is_night_mode)
-
+    def add_recette(self):
+        if updateDB.current_user is not None:
+            Add_recette(self, updateDB.current_user)
     def check_auto_login(self):
         """
         Fonction qui permet de vérifier si un utilisateur a la connexion automatique activée
@@ -241,7 +231,7 @@ class Login:
         self.root = Toplevel()
         self.root.geometry("240x100")
         self.root.title('Login')
-        self.root.resizable(0, 0)
+        self.root.resizable(0,0)
 
         # configure the grid
         self.root.columnconfigure(0, weight=1)
@@ -284,6 +274,76 @@ class Login:
                 print("switch to nightmode")
         self.root.destroy()
 
+class Add_recette:
+
+    def __init__(self, Homepage, account):
+
+        self.Homepage = Homepage
+        self.account = account
+
+        self.screen = Tk()
+        self.screen.geometry("500x500")
+        self.screen.title('Ajouter une recette')
+        self.screen.resizable(0,0)
+
+        self.screen.columnconfigure(0, weight=1)
+        self.screen.columnconfigure(1, weight=10)
+
+
+        # nom
+        self.name_label = ttk.Label(self.screen, text="Nom:")
+        self.name_label.grid(column=0, row=0, sticky=W, padx=5, pady=5)
+
+        self.name_entry = ttk.Entry(self.screen)
+        self.name_entry.grid(column=1, row=0, sticky=E, padx=5, pady=5)
+
+        # ingredients
+        self.ingredients_label = ttk.Label(self.screen, text="Ingredients:")
+        self.ingredients_label.grid(column=0, row=1, sticky=W, padx=5, pady=5)
+
+        self.ingredients_entry = ttk.Entry(self.screen)
+        self.ingredients_entry.grid(column=1, row=1, sticky=E, padx=5, pady=5)
+
+        #recette
+        self.recette_label = ttk.Label(self.screen, text="Recette:")
+        self.recette_label.grid(column=0, row=2, sticky=W, padx=5, pady=5)
+
+        self.recette_entry = ttk.Entry(self.screen)
+        self.recette_entry.grid(column=1, row=2, sticky=E, padx=5, pady=5)
+
+        #categorie
+        self.categorie_label = ttk.Label(self.screen, text="Categorie:")
+        self.categorie_label.grid(column=0, row=3, sticky=W, padx=5, pady=5)
+
+        self.categorie_entry = ttk.Entry(self.screen)
+        self.categorie_entry.grid(column=1, row=3, sticky=E, padx=5, pady=5)
+
+        #image
+        self.image_label = ttk.Label(self.screen, text="Path:")
+        self.image_label.grid(column=0, row=4, sticky=W, padx=5, pady=5)
+
+        self.image_entry = ttk.Entry(self.screen)
+        self.image_entry.grid(column=1, row=4, sticky=E, padx=5, pady=5)
+
+        # Add button
+        self.add_button = ttk.Button(self.screen, text="ADD", command=self.add)
+        self.add_button.grid(column=1, row=5, sticky=E, padx=5, pady=5)
+
+        self.screen.mainloop()
+
+    def add(self):
+        """
+        Fonction qui permet de récupérer l'email et le mot de passe entré par l'utilisateur et de le connecter
+        """
+        nom = self.name_entry.get()
+        ingredients = self.ingredients_entry.get()
+        recette = self.recette_entry.get()
+        categories = self.categorie_entry.get()
+        image= self.image_entry.get()
+        submitted_by = self.account[1]
+
+
+        login_try = updateDB.add_recette(nom,ingredients,recette,  categories, image, submitted_by)
 
 # ===============================================================================#Le TKINTER#==========================================================================================================#
 homepage = Homepage()
