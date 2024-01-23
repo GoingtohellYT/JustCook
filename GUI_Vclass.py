@@ -340,7 +340,7 @@ class Add_recette:
         recette = self.recette_entry.get()
         categories = self.categorie_entry.get()
         image= self.image_entry.get()
-        submitted_by = self.account[1]
+        submitted_by = self.account
 
 
         login_try = updateDB.add_recette(nom,ingredients,recette,  categories, image, submitted_by)
