@@ -37,11 +37,14 @@ class Request:
         self.c.execute(f"SELECT * FROM recettes WHERE id = {recette_id}")
         return self.c.fetchall()[0]
 
-    def get(self, attribut, table, condition1,  condition2):
+    def get(self, attribut, table, condition1=None, condition2= None):
         """
         Fonction qui permet d'accéder à la base de données en fonction d'une condition qui dépend de l'attribut
         """
-        self.c.execute(f"SELECT {attribut} FROM {table} WHERE {condition1} = {condition2}")
+        if condition1 == None:
+            self.c.execute(f"SELECT {attribut} FROM {table}")
+        else:
+            self.c.execute(f"SELECT {attribut} FROM {table} WHERE {condition1} = {condition2}")
         return self.c.fetchall()
 
     # fonction login(email, mdp)
