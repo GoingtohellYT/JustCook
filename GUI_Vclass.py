@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+
+import tkinter as tk
+
 import requestDB
 import cat_page
 from settings import Settings
@@ -187,6 +190,9 @@ class Homepage:
     def add_recette(self):
         if updateDB.current_user is not None:
             Add_recette(self, updateDB.current_user)
+        else:
+            popupmsg("Vous n'êtes pas connecté")
+
     def check_auto_login(self):
         """
         Fonction qui permet de vérifier si un utilisateur a la connexion automatique activée
@@ -342,8 +348,24 @@ class Add_recette:
         image= self.image_entry.get()
         submitted_by = self.account
 
-
         login_try = updateDB.add_recette(nom,ingredients,recette,  categories, image, submitted_by)
+
+def popupmsg(msg):
+    popup = Tk()
+
+    popup.geometry("150x150")
+    popup.title('ATTATION /!\ ')
+    popup.resizable()
+
+    popup.columnconfigure(0, weight=1)
+    popup.columnconfigure(1, weight=1)
+
+    label = ttk.Label(popup, text=msg)
+    label.grid(column=1, row=0)
+
+    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
+    B1.grid(column=1, row=1)
+    popup.mainloop()
 
 # ===============================================================================#Le TKINTER#==========================================================================================================#
 homepage = Homepage()
