@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+
+import requestDB
 import updateDB
 import updateDB
+import recipy_page
 from requestDB import request
 
 
@@ -89,6 +92,8 @@ class Settings:
 
         self.corps.grid(row=1, column=0)
 
+        self.show_fav()
+
         # ________________Le footer________________#
 
         self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, command=self.screen.destroy)
@@ -102,6 +107,7 @@ class Settings:
 
         self.screen.mainloop()
 
+    # _______________Les Fonctions_________________#
     def nightmode(self):
         if not self.is_night_mode:
             self.bg_color = self.night_bg
@@ -176,3 +182,17 @@ class Settings:
         updateDB.current_user = None
         print("logged out")
         self.screen.destroy()
+
+    def get_fav(self, user):
+        return requestDB.request.get("id_recette", "favoris", "email", user)
+
+    def show_fav(self):
+        fav = self.get_fav(updateDB.current_user)
+        i = len(fav)
+        while i < fav:
+            nom = requestDB.request.get_recette_info(fav)
+            #add le nom de la recette avec le lien vers cette recette à l'affichage
+            recette = Label(self.corps, text=f"Favoris n°{i} : {nom}")
+            recette.grid(column=2, row=i+2)
+            btn_rectte = Button(self.corps, text='Acceder à la recette', command=recipy_page.RecipyPage(fav), background=self.main_color)
+            btn_rectte.grid(column=3, row=i+2)
