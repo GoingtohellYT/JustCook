@@ -261,6 +261,7 @@ class Login:
         self.login_button = ttk.Button(self.root, text="Login", command=self.log)
         self.login_button.grid(column=1, row=3, sticky=E, padx=5, pady=5)
 
+
         self.root.mainloop()
 
     def log(self):
@@ -354,7 +355,7 @@ def popupmsg(msg):
     popup = Tk()
 
     popup.geometry("150x150")
-    popup.title('ATTATION /!\ ')
+    popup.title('ATTENTION /!\ ')
     popup.resizable()
 
     popup.columnconfigure(0, weight=1)
@@ -363,7 +364,7 @@ def popupmsg(msg):
     label = ttk.Label(popup, text=msg)
     label.grid(column=1, row=0)
 
-    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
+    B1 = ttk.Button(popup, text="Okay", command=popup.destroy)
     B1.grid(column=1, row=1)
     popup.mainloop()
 
