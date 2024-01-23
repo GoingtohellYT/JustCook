@@ -170,4 +170,11 @@ class RecipyPage:
                 self.background_widgets.append(self.etp)
                 self.etp.pack(side=TOP, fill=BOTH, expand=1)
 
+
+    def get_comment(self):
+        return requestDB.request.get("note, comment", "comments", self.id, self.id)
+    #def show_comment(self):
+        #note = get_comment()[0]
+
+
 # recipy = RecipyPage(0)
