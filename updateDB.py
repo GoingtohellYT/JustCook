@@ -1,387 +1,291 @@
-from tkinter import *
-from tkinter import ttk
-import os
-import requestDB
-import cat_page
-from settings import Settings
-import updateDB
-from requestDB import request
+import sqlite3
+import argon2
+
+current_user = None
 
 
-# =============================================================================#Les Variables#=========================================================================================================#
-class Homepage:
-    def __init__(self):
+# ------ Fonctions de vérification dans la DB ------ #
+def check_user(email):
+    """
+    Fonction qui vérifie si l'utilisateur existe
 
-        self.day_sc_bg = "#a8bfe0"
-        self.day_main = "#f7ee34"
+    Retourne :
+        True ou False selon si l'utilisateur est dans la DB
+    Pré-conditions :
+        email est un email valide
+    Post-conditions :
+        un booléen est renvoyé et la DB n'est pas modifiée
+    """
+    assert "@" in email and "." in email, "l'email n'est pas valide"
 
-        self.night_bg = "#634482"
-        self.night_main = "#bca7d1"
+    connexion = sqlite3.connect('websiteDB.db')
+    c = connexion.cursor()
 
-        self.bg_color = self.day_sc_bg
-        self.main_color = self.day_main
+    c.execute(f"""
+    SELECT email FROM users
+    WHERE email LIKE "{email}";
+    """)
 
-        self.is_night_mode = False
+    result = c.fetchall()
+    c.close()
+    return len(result) == 1
 
-        self.main_widgets = []
-        self.background_widgets = []
 
-        if os.name == "nt":
-            self.titlesfont = ("MV Boli",18)
-            self.logofont = ("MV Boli",45)
-        elif os.name == "posix":
-            self.titlesfont = ("Z003",18)
-            self.logofont = ("Z003",45)
-        else:
-            self.titlesfont = ("Times New Roman",18)
-            self.logofont = ("Times New Roman",45)
-        ##=================================================================##L'ECRAN##=================================================================##
+def set_current_user(email):
+    """
+    Sets the current user to the specified email
+    """
+    assert check_user(email), "L'utilisateur n'existe pas"
 
-        self.screen = Tk()
-        self.screen.title("JustCook")
-        self.screen.geometry("1280x720")
-        # screen.attributes('-fullscreen', True)  # met l'écren en fullscreen
-        self.screen.resizable(0, 0)
-        self.screen.configure(background=self.bg_color)
+    global current_user
+    current_user = email
 
-        self.screen.rowconfigure(0, weight=0)
-        self.screen.rowconfigure(1, weight=4)
-        self.screen.rowconfigure(2, weight=0)
-        self.screen.rowconfigure(3, weight=5)
-        self.screen.rowconfigure(4, weight=0)
-        self.screen.rowconfigure(5, weight=0)
 
-        self.screen.columnconfigure(0, weight=1)  # somehow, si on met les poids à 1 partout ils sont pas tous égaux
-        self.screen.columnconfigure(1, weight=0)
-        self.screen.columnconfigure(2, weight=3)
-        self.screen.columnconfigure(3, weight=3)
+def check_recette(id_recette):
+    """
+    Fonction qui vérifie si la recette est présente dans la DB
 
-        self.background_widgets.append(self.screen)
+    Retourne :
+        True ou False selon si la recette est dans la DB
+    Pré-conditions :
+        id_recette est un integer supérieur ou égal à 0
+    Post-conditions :
+        Un booléen est renvoyé et la DB n'est pas modifiée
+    """
+    assert type(id_recette) is int and id_recette >= 0
 
-        ##=================================================================##LES WIDGETS##=================================================================##
+    connexion = sqlite3.connect('websiteDB.db')
+    c = connexion.cursor()
 
-        # ________________Le header________________#
+    c.execute(f"""
+    SELECT id FROM recettes
+    WHERE id LIKE {id_recette};
+    """)
 
-        self.header = Frame(self.screen, background=self.main_color)
-        self.main_widgets.append(self.header)
-        self.header.grid(row=0, column=0, columnspan=4)
+    result = c.fetchall()
+    c.close()
+    return len(result) == 1
 
-        self.lbl_logo = ttk.Label(self.screen, text="JustCook")
-        self.main_widgets.append(self.lbl_logo)
-        self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
-        self.lbl_logo.config(background=self.main_color, padding=(100, 0), font=self.logofont)
 
-        self.img_user = PhotoImage(file="./images/user.png")
-        self.user = Button(self.screen, image=self.img_user, background='white', command=self.login)
-        self.user.grid(column=3, row=0)
+def check_favoris(email, id_recette):
+    """
+    Fonction qui vérifie si une recette fait partie des favoris d'un utilisateur
 
-        self.img_add = PhotoImage(file="./images/add.png")
-        self.add = Button(self.screen, image=self.img_add, background="red", command=self.add_recette)
-        self.add.grid(column=2, row=0)
+    Retourne :
+        True ou False selon si la recette fait partie des favoris de l'utilisateur
+    Pré-conditions :
+        id_recette est l'identifiant d'une recette existante
+        email est l'email d'un utilisateur existant
+    Post-conditions :
+        Un booléen est renvoyé et la DB n'est pas modifiée
+    """
+    assert check_recette(id_recette), "La recette n'existe pas"
+    assert check_user(email), "L'utilisateur n'existe pas"
 
-        # ________________Contenu principal de la fenêtre________________#
+    connexion = sqlite3.connect("websiteDB.db")
+    c = connexion.cursor()
 
-        self.img_entrees = PhotoImage(file="./images/entree.png")
-        self.entrees_lbl = Label(image=self.img_entrees)
-        self.entrees = Button(self.screen, image=self.img_entrees, command=self.see_entrees)
-        self.entrees.grid(column=0, row=1, pady=(15, 0), padx=30, sticky=NSEW)
+    c.execute(f"""
+    SELECT email FROM favoris
+    WHERE id_recette LIKE {id_recette};
+    """)
 
-        self.btn_entrees = Button(self.screen, text="Entrées", bg=self.main_color, font=self.titlesfont, command=self.see_entrees)
-        self.main_widgets.append(self.btn_entrees)
-        self.btn_entrees.grid(column=0, row=2, sticky=NSEW, pady=(0, 5), padx=30)
+    result = c.fetchall()
+    c.close()
+    try:
+        return email in result[0]
+    except IndexError:
+        return None
 
-        self.img_pates = PhotoImage(file="./images/pates.png")
-        self.pates = Button(self.screen, image=self.img_pates, command=self.see_pates).grid(column=1, row=1,sticky=NSEW, pady=(15, 0),padx=30)
+# ------ Fonctions d'ajout dans la DB ------ #
+def add_user(pseudo, mdp, email):
+    """
+    Fonction qui permet d'ajouter un utilisateur à la db
 
-        self.btn_pates = Button(self.screen, text="Pâtes", bg=self.main_color, font=self.titlesfont, command=self.see_pates)
-        self.main_widgets.append(self.btn_pates)
-        self.btn_pates.grid(column=1, row=2, sticky=NSEW, pady=(0, 5), padx=30)
+    Retourne :
+        Rien
+    Pré-conditions :
+        pseudo est du type string
+        mdp est du type string
+        email est du type string
+    Post-conditions :
+        un nouvel utilisateur est ajouté à la db
+    """
+    assert type(pseudo) is str, "pseudo is not str"
+    assert type(mdp) is str, "mdp is not str"
+    assert type(email) is str, "email is not str"
+    assert "@" in email and "." in email, "email not valid"
 
-        self.img_viande = PhotoImage(file="./images/viande_modified.png")
-        self.viande = Button(self.screen, image=self.img_viande, command=self.see_viandes).grid(column=2, row=1, sticky=NSEW,pady=(15, 0), padx=30)
+    ph = argon2.PasswordHasher()
+    hashed_mdp = ph.hash(mdp)
+    print(hashed_mdp)
+    connexion = sqlite3.connect('websiteDB.db')
+    c = connexion.cursor()
 
-        self.btn_viande = Button(self.screen, text="Viandes", bg=self.main_color, font=self.titlesfont, command=self.see_viandes)
-        self.main_widgets.append(self.btn_viande)
-        self.btn_viande.grid(column=2, row=2, sticky=NSEW, pady=(0, 5), padx=30)
+    c.execute(f"""
+    INSERT INTO users
+    VALUES ("{pseudo}", "{str(hashed_mdp)}", "{email}");
+    """)
 
-        self.img_poisson = PhotoImage(file="./images/poisson_modified.png")
-        self.poisson = Button(self.screen, image=self.img_poisson, command=self.see_poissons).grid(column=3, row=1,sticky=NSEW,pady=(15, 0),padx=30)
+    connexion.commit()
 
-        self.btn_poisson = Button(self.screen, text="Poissons", bg=self.main_color, font=self.titlesfont, command=self.see_poissons)
-        self.main_widgets.append(self.btn_poisson)
-        self.btn_poisson.grid(column=3, row=2, sticky=NSEW, pady=(0, 5), padx=30)
+    c.execute(f"""
+    INSERT INTO user_settings
+    VALUES ({0}, {0}, "{email}")
+    """)
 
-        self.frm = Frame(self.screen,background=self.bg_color)  # Permet d'avoir 3 boutons sur la deuxième ligne sans que ça soit aligné avec ceux de la première ligne
-        self.background_widgets.append(self.frm)
-        self.frm.grid(row=4, column=0, columnspan=4, sticky=NSEW)
+    connexion.commit()
 
-        self.frm.columnconfigure(0, weight=1)
-        self.frm.columnconfigure(1, weight=1)
-        self.frm.columnconfigure(2, weight=1)
+    c.close()
 
-        self.frm.rowconfigure(0, weight=3)
-        self.frm.rowconfigure(1, weight=1)
+    global current_user
+    current_user = email
 
-        self.img_legumes = PhotoImage(file="./images/légumes.png")
-        self.legumes = Button(self.frm, image=self.img_legumes, command=self.see_legumes).grid(column=0, row=0, sticky=NSEW, pady=(5, 0), padx=30)
 
-        self.btn_legumes = Button(self.frm, text="Légumes", bg=self.main_color, font=self.titlesfont, command=self.see_legumes)
-        self.main_widgets.append(self.btn_legumes)
-        self.btn_legumes.grid(column=0, row=1, sticky=NSEW, pady=(0, 15), padx=30)
+def add_recette(nom, ingredients, recette, categories, image, submitted_by):
+    """
+    Fonction qui ajoute une recette à la db
 
-        self.img_dessert = PhotoImage(file="./images/dessert.png")
-        self.dessert = Button(self.frm, image=self.img_dessert, command=self.see_desserts).grid(column=1, row=0,sticky=NSEW,pady=(5, 0), padx=30)
+    Retourne :
+        Rien
+    Pré-conditions :
+        tous les paramètres sont du type string (les ingredients sont séparés par des ';')
+    """
+    assert type(nom) is str
+    assert type(ingredients) is str
+    assert type(categories) is str
+    assert check_user(submitted_by)
 
-        self.btn_desserts = Button(self.frm, text="Desserts", bg=self.main_color, font=self.titlesfont, command=self.see_desserts)
-        self.main_widgets.append(self.btn_desserts)
-        self.btn_desserts.grid(column=1, row=1, sticky=NSEW, pady=(0, 15), padx=30)
+    connexion = sqlite3.connect('websiteDB.db')
+    c = connexion.cursor()
 
-        self.img_soupe = PhotoImage(file="images/soupe.png")
-        self.soupe = Button(self.frm, image=self.img_soupe, command=self.see_soupes).grid(column=2, row=0, sticky=NSEW, pady=(5, 0), padx=30)
+    c.execute("""
+    SELECT MAX(id) FROM recettes;
+    """)
 
-        self.btn_soupe = Button(self.frm, text="Soupes", bg=self.main_color, font=self.titlesfont, command=self.see_soupes)
-        self.main_widgets.append(self.btn_soupe)
-        self.btn_soupe.grid(column=2, row=1, sticky=NSEW, pady=(0, 15), padx=30, columnspan=2)
+    result = c.fetchall()
+    # print(result)
+    if result[0][0] is not None:  # S'il y a déjà des recettes dans la DB
+        last_id = result[0][0]
 
-        # ________________Le footer________________#
+        c.execute(f"""
+        INSERT INTO recettes
+        values (?, ?, ?, ?, ?, ?, ?);
+        """, (last_id + 1, nom, ingredients, recette, categories, image, submitted_by))
+    else:  # Si la table recettes est vide
+        c.execute(f"""
+        INSERT INTO recettes
+        VALUES ({0}, "{nom}", "{ingredients}", "{recette}", "{categories}", "{image}", "{submitted_by}");
+        """)
 
-        self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, font=self.titlesfont, command=self.screen.destroy)
-        self.main_widgets.append(self.btn_footer)
-        self.btn_footer.grid(column=2, row=5, sticky=NSEW, columnspan=2)
+    connexion.commit()
 
-        self.btn_night = Button(self.screen, text='Nightmode', font=self.titlesfont, command=self.screen_mode_update,
-                                background=self.main_color)
-        self.main_widgets.append(self.btn_night)
-        self.btn_night.grid(column=0, row=5, columnspan=2, sticky=NSEW)
+    c.close()
 
-        self.check_auto_login()  # On vérifie la connexion auto d'un user
 
-        self.screen.mainloop()
+def add_favori(id_recette):
+    """
+    Fonction qui ajoute un favori à l'utilisateur actuel
 
-    ##=================================================================##LES FONCTIONS##=================================================================##
+    Retourne :
+        Rien
+    Pré-conditions :
+        id_recette est un integer qui correspond à l'id d'une recette dans la table recettes
+    Post-conditions :
+        La recette est ajoutée à l'utilisateur actuel
+    """
+    assert type(id_recette) is int
 
-    def nightmode(self):
+    if check_recette(id_recette):
+        global current_user
 
-        if not self.is_night_mode:
-            self.bg_color = self.night_bg
-            self.main_color = self.night_main
-            for e in self.main_widgets:
-                e.configure(background=self.main_color)
-            self.is_night_mode = True
-            for e in self.background_widgets:
-                e.configure(background=self.bg_color)
-            self.btn_night.configure(text="Light mode")
-        else:
-            self.bg_color = self.day_sc_bg
-            self.main_color = self.day_main
-            for e in self.main_widgets:
-                e.configure(background=self.main_color)
+        connexion = sqlite3.connect('websiteDB.db')
+        c = connexion.cursor()
 
-            for e in self.background_widgets:
-                e.configure(background=self.bg_color)
-                self.btn_night.configure(text="Night mode")
-            self.is_night_mode = False
-
-        self.screen.update()
-        self.screen.update_idletasks()
-        # print(header.cget('background'))
-
-    def screen_mode_update(self):
-        Tk.after(self.screen, 500, self.nightmode)
-
-    def login(self):
-        if updateDB.current_user is None:
-            Login(self)
-        else:
-            Settings(self.is_night_mode)
-    def add_recette(self):
-        if updateDB.current_user is not None:
-            Add_recette(self, updateDB.current_user)
-        else:
-            popupmsg("Tu n'est pas log !!!")
-    def check_auto_login(self):
+        request = f"""
+        INSERT INTO favoris
+        values ("{current_user}", {id_recette});
         """
-        Fonction qui permet de vérifier si un utilisateur a la connexion automatique activée
-        et de le connecter si c'est le cas
-        """
-        try:
-            potential_user = request.get("email", "user_settings", "stay_logged_in", 1)[0][0]
-            if updateDB.check_user(potential_user):
-                updateDB.set_current_user(potential_user)
-                print("Connexion automatique !")
-                if request.get("dark_mode", "user_settings", "email", f'"{potential_user}"')[0][0] == 1:
-                    self.screen_mode_update()  # On active le nightmode si c'est dans ses préférences
-        except IndexError:
-            print("Aucun utilisateur n'a la connexion automatique d'activée")
 
-    def see_entrees(self):
-        cat_page.CategoryPage("Entrée", self.is_night_mode)
+        print(request)
 
-    def see_pates(self):
-        cat_page.CategoryPage("Pâtes", self.is_night_mode)
+        c.execute(request)
 
-    def see_viandes(self):
-        cat_page.CategoryPage("Viandes", self.is_night_mode)
+        connexion.commit()
 
-    def see_poissons(self):
-        cat_page.CategoryPage("Poissons", self.is_night_mode)
-
-    def see_legumes(self):
-        cat_page.CategoryPage("Légumes", self.is_night_mode)
-
-    def see_desserts(self):
-        cat_page.CategoryPage("Desserts", self.is_night_mode)
-
-    def see_soupes(self):
-        cat_page.CategoryPage("Soupes", self.is_night_mode)
+        c.close()
 
 
-class Login:
-    def __init__(self, homepage):
-        self.homepage = homepage
+def add_comment(recette_id, note, comment):
+    """
+    Fonction qui permet d'ajouter un commentaire à la table comments
 
-        self.root = Toplevel()
-        self.root.geometry("240x100")
-        self.root.title('Login')
-        self.root.resizable(0,0)
+    Retourne :
+        Rien
+    Pré-conditions :
+        recette_id est l'id d'une recette dans la DB
+        note est un integer compris entre 0 et 5
+        comment est une string qui contient le commentaire
+    Post-conditions :
+        un commentaire est ajouté à la table comments
+    """
+    assert check_recette(recette_id), "recette inconnue"
+    assert type(note) is int and note >= 0 and note <= 5, "note impossible"
+    assert type(comment) is str, "Mauvais format de commentaire"
 
-        # configure the grid
-        self.root.columnconfigure(0, weight=1)
-        self.root.columnconfigure(1, weight=3)
+    global current_user
 
-        # username
-        self.username_label = ttk.Label(self.root, text="Email:")
-        self.username_label.grid(column=0, row=0, sticky=W, padx=5, pady=5)
+    connexion = sqlite3.connect('websiteDB.db')
+    c = connexion.cursor()
 
-        self.username_entry = ttk.Entry(self.root)
-        self.username_entry.grid(column=1, row=0, sticky=E, padx=5, pady=5)
+    c.execute(f"""
+    INSERT INTO comments
+    values (?, ?, ?, ?);
+    """, (current_user, recette_id, note, comment))
 
-        # password
-        self.password_label = ttk.Label(self.root, text="Password:")
-        self.password_label.grid(column=0, row=1, sticky=W, padx=5, pady=5)
+    connexion.commit()
 
-        self.password_entry = ttk.Entry(self.root, show="*")
-        self.password_entry.grid(column=1, row=1, sticky=E, padx=5, pady=5)
-
-        # login button
-        self.login_button = ttk.Button(self.root, text="Login", command=self.log)
-        self.login_button.grid(column=1, row=3, sticky=E, padx=5, pady=5)
-
-        self.root.mainloop()
-
-    def log(self):
-        """
-        Fonction qui permet de récupérer l'email et le mot de passe entré par l'utilisateur et de le connecter
-        """
-        email = self.username_entry.get()
-        pwd = self.password_entry.get()
-
-        login_try = requestDB.request.login(email, pwd)
-
-        if login_try[0]:
-            updateDB.set_current_user(email)
-            print("logged in")
-            if login_try[1]:
-                self.homepage.screen_mode_update()
-                print("switch to nightmode")
-        self.root.destroy()
-
-class Add_recette:
-
-    def __init__(self, homepage, account):
-
-        self.homepage = homepage
-        self.account = account
-
-        self.screen = Toplevel()
-        self.screen.geometry("500x500")
-        self.screen.title('Ajouter une recette')
-        self.screen.resizable(0,0)
-        self.screen.configure(background=self.homepage.bg_color)
-
-        self.screen.columnconfigure(0, weight=1)
-        self.screen.columnconfigure(1, weight=10)
-
-        self.header = Frame(self.screen, background=self.homepage.main_color)
-
-        self.header.grid(row=0, column=0, columnspan=4)
-
-        self.lbl_logo = ttk.Label(self.screen, text="JustCook")
-        self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
-        self.lbl_logo.config(background=self.homepage.main_color, padding=(100, 0), font=self.homepage.logofont)
+    c.close()
 
 
-        # nom
-        self.name_label = ttk.Label(self.screen, text="Nom:",background=self.homepage.bg_color)
-        self.name_label.grid(column=0, row=1, sticky=W, padx=5, pady=5)
+# ------ Fonctions de modification de la DB ------ #
+def change_user_setting(setting, value):
+    """
+    Fonction qui permet de changer un réglage utilisateur dans la DB
 
-        self.name_entry = ttk.Entry(self.screen)
-        self.name_entry.grid(column=1, row=1, sticky=E, padx=5, pady=5)
+    Retourne :
+        Rien
+    Pré-conditions :
+        setting est du type str et représente un réglage qui existe dans la DB
+        value est du type int et varie entre 0 et 1 (False et True)
+    """
+    assert type(setting) is str and setting in ["dark_mode", "stay_logged_in"], "setting n'est pas une valeur acceptée"
+    assert type(value) is int and (value == 0 or value == 1), "value n'a pas une valeur acceptée"
 
-        # ingredients
-        self.ingredients_label = ttk.Label(self.screen, text="Ingredients:",background=self.homepage.bg_color)
-        self.ingredients_label.grid(column=0, row=2, sticky=W, padx=5, pady=5)
+    global current_user
 
-        self.ingredients_entry = ttk.Entry(self.screen)
-        self.ingredients_entry.grid(column=1, row=2, sticky=E, padx=5, pady=5)
+    connexion = sqlite3.connect("websiteDB.db")
+    c = connexion.cursor()
 
-        #recette
-        self.recette_label = ttk.Label(self.screen, text="Recette:",background=self.homepage.bg_color)
-        self.recette_label.grid(column=0, row=3, sticky=W, padx=5, pady=5)
+    c.execute(f"""
+    UPDATE user_settings
+    SET "{setting}" = {value}
+    WHERE email = "{current_user}";
+    """)
 
-        self.recette_entry = ttk.Entry(self.screen)
-        self.recette_entry.grid(column=1, row=3, sticky=E, padx=5, pady=5)
-
-        #categorie
-        self.categorie_label = ttk.Label(self.screen, text="Categorie:",background=self.homepage.bg_color)
-        self.categorie_label.grid(column=0, row=4, sticky=W, padx=5, pady=5)
-
-        self.categorie_entry = ttk.Entry(self.screen,background=self.homepage.bg_color)
-        self.categorie_entry.grid(column=1, row=4, sticky=E, padx=5, pady=5)
-
-        #image
-        self.image_label = ttk.Label(self.screen, text="Path:",background=self.homepage.bg_color)
-        self.image_label.grid(column=0, row=5, sticky=W, padx=5, pady=5)
-
-        self.image_entry = ttk.Entry(self.screen)
-        self.image_entry.grid(column=1, row=5, sticky=E, padx=5, pady=5)
-
-        # Add button
-        self.add_button = Button(self.screen, text="ADD", command=self.add,background=self.homepage.main_color)
-        self.add_button.grid(column=1, row=6, sticky=E, padx=5, pady=5)
-
-        self.screen.mainloop()
-
-    def add(self):
-        """
-        Fonction qui permet de récupérer l'email et le mot de passe entré par l'utilisateur et de le connecter
-        """
-        nom = self.name_entry.get()
-        ingredients = self.ingredients_entry.get()
-        recette = self.recette_entry.get()
-        categories = self.categorie_entry.get()
-        image= self.image_entry.get()
-        submitted_by = self.account
+    connexion.commit()
+    c.close()
 
 
-        login_try = updateDB.add_recette(nom,ingredients,recette,  categories, image, submitted_by)
-        self.screen.destroy()
+# ------ Tests ------ #
+"""
+add_user("test", "test", "test.test@gmail.com")
+add_recette("Pâtes au beurre", "pâtes;eau;beurre", "faire bouillir de l'eau;mettre les pâtes;ajouter un peu de beurre quand le tout est cuit", "Pâtes", "./img_recettes/pates_au_beurre.jpg", "test.test@gmail.com")
+add_recette("Pâtes à l'huile", "pâtes;eau;huile", "faire bouillir de l'eau;faire cuire les pâtes;ajouter un peu d'huile avant de servir", "Pâtes", "./img_recettes/pates_huile.jpg", "test.test@gmail.com")
+add_user("Alex", "Alex", "alex.bonjour@gmail.com")
+set_current_user("alex.bonjour@gmail.com")
+add_comment(0, 4, "Classique mais ça fait toujours plaisir !")
+add_favori(1)
+"""
 
-def popupmsg(msg):
-    popup = Toplevel()
 
-    popup.geometry("150x150")
-    popup.title('ATTENTION /!\ ')
-    popup.resizable()
-
-    popup.columnconfigure(0, weight=1)
-    popup.columnconfigure(1, weight=1)
-
-    label = Label(popup, text=msg)
-    label.grid(column=1, row=0)
-
-    B1 = Button(popup, text="Okay", command=popup.destroy)
-    B1.grid(column=1, row=1)
-    popup.mainloop()
-# ===============================================================================#Le TKINTER#==========================================================================================================#
-homepage = Homepage()
