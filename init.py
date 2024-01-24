@@ -1,5 +1,11 @@
 import sqlite3
 
+"""
+Fichier qui permet de créer une base de donnée vierge avec toutes les tables nécessaires
+Avec le bon nom et prête à l'emploie
+
+"""
+
 connexion = sqlite3.connect('websiteDB.db')
 
 c = connexion.cursor()
