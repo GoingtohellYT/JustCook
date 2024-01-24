@@ -185,18 +185,24 @@ class Settings:
         self.screen.destroy()
 
     def get_fav(self, user):
-        return requestDB.request.get("id_recette", "favoris", "email", user)
+        return requestDB.request.get("id_recette", "favoris", "email", f'"{user}"')
 
     def show_fav(self):
         try:
+
             fav = self.get_fav(updateDB.current_user)
-            i = len(fav)
-            while i < fav:
-                nom = requestDB.request.get_recette_info(fav)
+            print(fav)
+            
+            for i in range(len(fav)):
+                nom = requestDB.request.get_recette_info(fav[i][0])
                 #add le nom de la recette avec le lien vers cette recette à l'affichage
-                recette = Label(self.corps, text=f"Favoris n°{i} : {nom}")
-                recette.grid(column=2, row=i+2)
-                btn_rectte = Button(self.corps, text='Acceder à la recette', command=recipy_page.RecipyPage(fav), background=self.main_color)
-                btn_rectte.grid(column=3, row=i+2)
+                recette = Label(self.corps, text=f"Favoris n°{i} : {nom[1]}")
+                recette.grid(column=0, row=i+3)
+                btn_rectte = Button(self.corps, text='Acceder à la recette', command=lambda: recipy_page.RecipyPage(fav[0][],self.is_night_mode), background=self.main_color)
+                self.main_widgets.append(btn_rectte)
+                btn_rectte.grid(column=1, row=i+3)
+        
         except sqlite3.OperationalError:
             print("Cet utilisateur n'a pas encore de favoris")
+
+
