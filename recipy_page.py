@@ -232,6 +232,10 @@ class RecipyPage:
             self.image_fav = "./images/fav.png"
 
     def add_fav(self):
+        """
+        Permet d'ajouter aux favoris une recette dans la table favoris
+        Renvoie rien
+        """
         try:
             updateDB.add_favori(self.id)
         except AssertionError:
