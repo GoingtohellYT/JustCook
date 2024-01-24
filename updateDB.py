@@ -281,6 +281,30 @@ def change_user_setting(setting, value):
     connexion.commit()
     c.close()
 
+def remove_fav(id_recette):
+    global current_user
+
+    assert check_recette(id_recette), "id inexistant"
+    assert current_user is not None, "L'utilisateur n'est pas défini"
+    assert check_user(current_user), "L'utilisateur n'est pas valide"
+
+    if check_recette(id_recette):
+        connexion = sqlite3.connect('websiteDB.db')
+        c = connexion.cursor()
+
+        request = f"""
+            DELETE FROM favoris
+            WHERE email LIKE "{current_user}" AND id_recette = {id_recette};
+            """
+
+        print(request)
+
+        c.execute(request)
+
+        connexion.commit()
+
+        c.close()
+
 
 # ------ Tests ------ #
 """
