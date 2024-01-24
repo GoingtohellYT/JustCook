@@ -41,7 +41,7 @@ def set_current_user(email):
     current_user = email
 
 
-def check_recette(id_recette):
+def check_recette(id_recette = "", nom_recette = ""):
     """
     Fonction qui vérifie si la recette est présente dans la DB
 
@@ -65,7 +65,6 @@ def check_recette(id_recette):
     result = c.fetchall()
     c.close()
     return len(result) == 1
-
 
 def check_favoris(email, id_recette):
     """
