@@ -190,13 +190,23 @@ class Homepage:
         Tk.after(self.screen, 500, self.nightmode)
 
     def login(self):
+        """
+        Fonction qui test si un utilisateur est connecté, si il y en a pas, alors on fait apparaitre la fenetre qui permet de se connecter
+        Si il y en a un alors on affiche la fenetre des paramètres de l'utilisateurs ainsi que ses favoris
+        Prend aucun paramètre et ne renvoie rien
+        """
         if updateDB.current_user is None:
             Login(self)
         else:
             Settings(self.is_night_mode)
     def add_recette(self):
+        """
+        Fonction qui permet de faire afficher la fenetre pour ajouter une recette dans la base de donnée
+        """
         if updateDB.current_user is not None:
             Add_recette(self, updateDB.current_user)
+        else:
+            popupmsg("Tu n'est pas log !")
     def check_auto_login(self):
         """
         Fonction qui permet de vérifier si un utilisateur a la connexion automatique activée
@@ -212,7 +222,10 @@ class Homepage:
         except IndexError:
             print("Aucun utilisateur n'a la connexion automatique d'activée")
 
+
+    """Fait appel au fichier cat_page qui permet d'afficher toutes les recettes d'une même catégorie pour toutes les fonctions see_..."""
     def see_entrees(self):
+        """Fait appel au fichier cat_page qui permet d'afficher toutes les recettes d'une même catégorie"""
         cat_page.CategoryPage("Entrée", self.is_night_mode)
 
     def see_pates(self):
@@ -361,11 +374,17 @@ class Add_recette:
         image= self.image_entry.get()
         submitted_by = self.account
 
-
         login_try = updateDB.add_recette(nom,ingredients,recette,  categories, image, submitted_by)
         self.screen.destroy()
 
 def popupmsg(msg):
+    """
+    Fonction qui permet de faire apparaître au centre de la fenêtre une pop up avec un message qu'on donne en paramètre
+    param msg:
+        Une string qui contient le message qu'on veut faire apparaitre
+    return:
+        None
+    """
     popup = Toplevel()
 
     popup.geometry("200x150")
