@@ -92,7 +92,13 @@ class RecipyPage:
         self.recette_frame.columnconfigure(0, weight=0)
 
         self.canvas.create_window((0, 0), window=self.recette_frame, anchor="nw")
-
+        
+        self.show_fav()
+        fav_img = PhotoImage(file=self.image_fav)
+        self.fav_button = Button(self.recette_frame,background=self.bg_color,image=fav_img,command=self.add_fav)
+        self.background_widgets.append(self.fav_button)
+        self.fav_button.pack()
+        
         self.show_recipy()
         self.show_comment()
 
@@ -208,5 +214,19 @@ class RecipyPage:
         #print(self.comment_bar.get()[0],self.comment_bar.get()[1:]) #
         updateDB.add_comment(self.id,int(self.comment_bar.get()[0]),self.comment_bar.get()[1:])
         print("Successfully commented")
+    def show_fav(self):
+        """
+        fonction qui affiche un coeur vide sur le bouton favori si la recette n'est pas dans les favoris, un coeur rempli autrement
+        """
+        #assert updateDB.current_user != None
+        
+        if updateDB.check_favoris(updateDB.current_user,self.id):
+            self.image_fav = "./images/fav.png"
+        else:
+            self.image_fav = "./images/fav_filled.png"
+        
+    def add_fav(self):
+
+        updateDB.add_favori(self.id)
 
 # recipy = RecipyPage(0)
