@@ -108,7 +108,8 @@ class RecipyPage:
 
         self.comment_bar = Entry(self.recette_frame, textvariable=(self.comment_bar_note, self.comment_bar_input))
         self.comment_bar.pack()
-        self.comment_btn = Button(self.recette_frame, text="commenter", font=self.titlesfont, command=self.comment)
+        self.comment_btn = Button(self.recette_frame, text="commenter", font=self.titlesfont,background= self.main_color, command=self.comment)
+        self.main_widgets.append(self.comment_btn)
         self.comment_btn.pack()
         # ________________Le footer________________#
 
@@ -203,12 +204,14 @@ class RecipyPage:
     def show_comment(self):
         self.comments = self.get_comment()
         self.titre_com = Label(self.recette_frame, text="Commentaires", font=self.titlesfont, background=self.bg_color)
+        self.background_widgets.append(self.titre_com)
         self.titre_com.pack()
         for i in self.comments:
             self.note = i[0]
             self.comments = i[1]
             self.label = Label(self.recette_frame, text=f"Note: {self.note}, Comment: {self.comments}",
                                background=self.bg_color)
+            self.background_widgets.append(self.label)
             self.label.pack()
 
     def comment(self):
