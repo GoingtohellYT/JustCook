@@ -368,15 +368,29 @@ class Add_recette:
 def popupmsg(msg):
     popup = Toplevel()
 
-    popup.geometry("150x150")
+    popup.geometry("200x150")
     popup.title('ATTENTION /!\ ')
     popup.resizable()
 
+    w = 200  # width for the Tk root
+    h = 150  # height for the Tk root
+
+    # get screen width and height
+    ws = popup.winfo_screenwidth()  # width of the screen
+    hs = popup.winfo_screenheight()  # height of the screen
+
+    # calculate x and y coordinates for the Tk root window
+    x = (ws / 2) - (w / 2)
+    y = (hs / 2) - (h / 2)
+
+    popup.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
     popup.columnconfigure(0, weight=1)
     popup.columnconfigure(1, weight=1)
+    popup.columnconfigure(2, weight=1)
 
     label = Label(popup, text=msg)
-    label.grid(column=1, row=0)
+    label.grid(column=1, row=0, pady=w//4)
 
     B1 = Button(popup, text="Okay", command=popup.destroy)
     B1.grid(column=1, row=1)
