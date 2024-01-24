@@ -192,18 +192,18 @@ class RecipyPage:
 
 
     def get_comment(self):
-        return requestDB.request.get("note, comment", "comments", self.id, self.id)
+        return requestDB.request.get("note, comment", "comments", "recette_id", self.id)
     
     def show_comment(self):
         self.comments = self.get_comment()
         self.titre_com = Label(self.recette_frame,text="Commentaires",font=self.titlesfont,background=self.bg_color)
         self.titre_com.pack()
         for i in range(len(self.comments)):
-            note = self.comments[i][0]
-            comment = self.comments[i][1]
-            self.label = Label(self.recette_frame,text=f"Note: {note}, Comment: {comment}",background=self.bg_color)
+            self.note = self.comments[i][0]
+            self.comments = self.comments[i][1]
+            self.label = Label(self.recette_frame,text=f"Note: {self.note}, Comment: {self.comments}",background=self.bg_color)
             self.label.pack()
-        
+            
     def comment(self):
         #print(self.comment_bar.get()[0],self.comment_bar.get()[1:]) #
         updateDB.add_comment(self.id,int(self.comment_bar.get()[0]),self.comment_bar.get()[1:])
