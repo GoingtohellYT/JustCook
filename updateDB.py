@@ -97,6 +97,7 @@ def check_favoris(email, id_recette):
     except IndexError:
         return None
 
+
 # ------ Fonctions d'ajout dans la DB ------ #
 def add_user(pseudo, mdp, email):
     """
@@ -194,11 +195,13 @@ def add_favori(id_recette):
     Post-conditions :
         La recette est ajoutée à l'utilisateur actuel
     """
-    assert type(id_recette) is int
+    global current_user
+
+    assert check_recette(id_recette), "id inexistant"
+    assert current_user is not None, "L'utilisateur n'est pas défini"
+    assert check_user(current_user), "L'utilisateur n'est pas valide"
 
     if check_recette(id_recette):
-        global current_user
-
         connexion = sqlite3.connect('websiteDB.db')
         c = connexion.cursor()
 
@@ -234,6 +237,9 @@ def add_comment(recette_id, note, comment):
     assert type(comment) is str, "Mauvais format de commentaire"
 
     global current_user
+
+    assert current_user is not None, "L'utilisateur n'est pas défini"
+    assert check_user(current_user), "L'utilisateur n'est pas valide"
 
     connexion = sqlite3.connect('websiteDB.db')
     c = connexion.cursor()
@@ -287,5 +293,3 @@ set_current_user("alex.bonjour@gmail.com")
 add_comment(0, 4, "Classique mais ça fait toujours plaisir !")
 add_favori(1)
 """
-
-

@@ -4,6 +4,7 @@ import requestDB
 import updateDB
 import os
 
+
 class RecipyPage:
     def __init__(self, recipy_id, mode):
         self.id = recipy_id
@@ -23,14 +24,14 @@ class RecipyPage:
         self.background_widgets = []
 
         if os.name == "nt":
-            self.titlesfont = ("MV Boli",18)
-            self.logofont = ("MV Boli",45)
+            self.titlesfont = ("MV Boli", 18)
+            self.logofont = ("MV Boli", 45)
         elif os.name == "posix":
-            self.titlesfont = ("Z003",18)
-            self.logofont = ("Z003",45)
+            self.titlesfont = ("Z003", 18)
+            self.logofont = ("Z003", 45)
         else:
-            self.titlesfont = ("Times New Roman",18)
-            self.logofont = ("Times New Roman",45)
+            self.titlesfont = ("Times New Roman", 18)
+            self.logofont = ("Times New Roman", 45)
 
         self.screen = Toplevel()
         self.screen.title("JustCook")
@@ -92,31 +93,31 @@ class RecipyPage:
         self.recette_frame.columnconfigure(0, weight=0)
 
         self.canvas.create_window((0, 0), window=self.recette_frame, anchor="nw")
-        
+
         self.show_fav()
         fav_img = PhotoImage(file=self.image_fav)
-        self.fav_button = Button(self.recette_frame,background=self.bg_color,image=fav_img,command=self.add_fav)
+        self.fav_button = Button(self.recette_frame, background=self.bg_color, image=fav_img, command=self.add_fav)
         self.background_widgets.append(self.fav_button)
         self.fav_button.pack()
-        
+
         self.show_recipy()
         self.show_comment()
 
         self.comment_bar_input = ""
         self.comment_bar_note = 0
 
-
-        self.comment_bar = Entry(self.recette_frame,textvariable=(self.comment_bar_note,self.comment_bar_input))
+        self.comment_bar = Entry(self.recette_frame, textvariable=(self.comment_bar_note, self.comment_bar_input))
         self.comment_bar.pack()
-        self.comment_btn = Button(self.recette_frame,text="commenter",font=self.titlesfont,command=self.comment)
+        self.comment_btn = Button(self.recette_frame, text="commenter", font=self.titlesfont, command=self.comment)
         self.comment_btn.pack()
         # ________________Le footer________________#
 
-        self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color,font=self.titlesfont, command=self.screen.destroy)
+        self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, font=self.titlesfont,
+                                 command=self.screen.destroy)
         self.main_widgets.append(self.btn_footer)
         self.btn_footer.grid(column=2, row=2, sticky=NSEW, columnspan=2)
 
-        self.btn_night = Button(self.screen, text='Nightmode',font=self.titlesfont, command=self.screen_mode_update,
+        self.btn_night = Button(self.screen, text='Nightmode', font=self.titlesfont, command=self.screen_mode_update,
                                 background=self.main_color)
         self.main_widgets.append(self.btn_night)
         self.btn_night.grid(column=0, row=2, columnspan=2, sticky=NSEW)
@@ -164,7 +165,7 @@ class RecipyPage:
         self.ingredients = self.infos[2].split(";")
         etapes = self.infos[3].split(";")
 
-        self.titre_recette = Label(self.recette_frame, text=self.infos[1],font=self.titlesfont,
+        self.titre_recette = Label(self.recette_frame, text=self.infos[1], font=self.titlesfont,
                                    background=self.bg_color)
         self.background_widgets.append(self.titre_recette)
         self.titre_recette.pack(side=TOP, fill=BOTH, expand=1)
@@ -176,12 +177,12 @@ class RecipyPage:
 
         for i in range(len(etapes) + len(self.ingredients)):
             if i == 0:
-                self.ing_titre = Label(self.recette_frame, text="Ingrédients:",font=self.titlesfont,
+                self.ing_titre = Label(self.recette_frame, text="Ingrédients:", font=self.titlesfont,
                                        background=self.bg_color)
                 self.background_widgets.append(self.ing_titre)
                 self.ing_titre.pack(side=TOP, fill=BOTH, expand=1)
             elif i == len(self.ingredients):
-                self.etp_titre = Label(self.recette_frame, text="Étapes:",font=self.titlesfont,
+                self.etp_titre = Label(self.recette_frame, text="Étapes:", font=self.titlesfont,
                                        background=self.bg_color)
                 self.background_widgets.append(self.etp_titre)
                 self.etp_titre.pack(side=TOP, fill=BOTH, expand=1)
@@ -196,39 +197,44 @@ class RecipyPage:
                 self.background_widgets.append(self.etp)
                 self.etp.pack(side=TOP, fill=BOTH, expand=1)
 
-
     def get_comment(self):
         return requestDB.request.get("note, comment", "comments", "recette_id", self.id)
-    
+
     def show_comment(self):
         self.comments = self.get_comment()
-        self.titre_com = Label(self.recette_frame,text="Commentaires",font=self.titlesfont,background=self.bg_color)
+        self.titre_com = Label(self.recette_frame, text="Commentaires", font=self.titlesfont, background=self.bg_color)
         self.titre_com.pack()
-        for i in range(len(self.comments)):
-            self.note = self.comments[i][0]
-            self.comments = self.comments[i][1]
-            self.label = Label(self.recette_frame,text=f"Note: {self.note}, Comment: {self.comments}",background=self.bg_color)
+        for i in self.comments:
+            self.note = i[0]
+            self.comments = i[1]
+            self.label = Label(self.recette_frame, text=f"Note: {self.note}, Comment: {self.comments}",
+                               background=self.bg_color)
             self.label.pack()
-            
+
     def comment(self):
-        #print(self.comment_bar.get()[0],self.comment_bar.get()[1:]) #
-        updateDB.add_comment(self.id,int(self.comment_bar.get()[0]),self.comment_bar.get()[1:])
-        print("Successfully commented")
+        try:
+            updateDB.add_comment(self.id, int(self.comment_bar.get()[0]), self.comment_bar.get()[1:])
+            print("Successfully commented")
+        except AssertionError:
+            print("Impossible de commenter")
+
     def show_fav(self):
         """
         fonction qui affiche un coeur vide sur le bouton favori si la recette n'est pas dans les favoris, un coeur rempli autrement
         """
-        #assert updateDB.current_user != None
-                try:
-            if updateDB.check_favoris(updateDB.current_user,self.id):
-                self.image_fav = "./images/fav.png"
-            else:
+        # assert updateDB.current_user != None
+        try:
+            if updateDB.check_favoris(updateDB.current_user, self.id):
                 self.image_fav = "./images/fav_filled.png"
+            else:
+                self.image_fav = "./images/fav.png"
         except TypeError:
             self.image_fav = "./images/fav.png"
-        
-    def add_fav(self):
 
-        updateDB.add_favori(self.id)
+    def add_fav(self):
+        try:
+            updateDB.add_favori(self.id)
+        except AssertionError:
+            print("Impossible d'ajouter le favoris")
 
 # recipy = RecipyPage(0)

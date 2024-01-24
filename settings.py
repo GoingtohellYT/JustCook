@@ -189,19 +189,18 @@ class Settings:
 
     def show_fav(self):
         try:
-
             fav = self.get_fav(updateDB.current_user)
             print(fav)
-            
+
             for i in range(len(fav)):
                 nom = requestDB.request.get_recette_info(fav[i][0])
                 #add le nom de la recette avec le lien vers cette recette à l'affichage
                 recette = Label(self.corps, text=f"Favoris n°{i} : {nom[1]}")
                 recette.grid(column=0, row=i+3)
-                btn_rectte = Button(self.corps, text='Acceder à la recette', command=lambda: recipy_page.RecipyPage(fav[0][],self.is_night_mode), background=self.main_color)
+                btn_rectte = Button(self.corps, text='Accéder à la recette', command=lambda r_id=fav[i][0]: recipy_page.RecipyPage(r_id, self.is_night_mode), background=self.main_color)
                 self.main_widgets.append(btn_rectte)
                 btn_rectte.grid(column=1, row=i+3)
-        
+
         except sqlite3.OperationalError:
             print("Cet utilisateur n'a pas encore de favoris")
 

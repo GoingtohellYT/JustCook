@@ -6,10 +6,6 @@ from PIL import Image, ImageTk
 import os
 
 
-
-# from requestDB import ...
-
-
 class CategoryPage:
     def __init__(self, category, mode):
         self.category = category
@@ -29,14 +25,14 @@ class CategoryPage:
         self.background_widgets = []
 
         if os.name == "nt":
-            self.titlesfont = ("MV Boli",18)
-            self.logofont = ("MV Boli",45)
+            self.titlesfont = ("MV Boli", 12)
+            self.logofont = ("MV Boli", 45)
         elif os.name == "posix":
-            self.titlesfont = ("Z003",18)
-            self.logofont = ("Z003",45)
+            self.titlesfont = ("Z003", 12)
+            self.logofont = ("Z003", 45)
         else:
-            self.titlesfont = ("Times New Roman",18)
-            self.logofont = ("Times New Roman",45)
+            self.titlesfont = ("Times New Roman", 12)
+            self.logofont = ("Times New Roman", 45)
         ##=================================================================##L'ECRAN##=================================================================##
         self.screen = Toplevel()
         self.screen.title("JustCook")
@@ -90,7 +86,8 @@ class CategoryPage:
         """
         # ________________Le footer________________#
 
-        self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color,font=self.titlesfont, command=self.screen.destroy)
+        self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, font=self.titlesfont,
+                                 command=self.screen.destroy)
         self.main_widgets.append(self.btn_footer)
         self.btn_footer.grid(column=2, row=5, sticky=NSEW, columnspan=2)
 
@@ -157,18 +154,15 @@ class CategoryPage:
                 self.recette_frame.rowconfigure(i)
                 for j in range(4):
                     if index < len(recettes):
-                        print(index)
                         image_recette = Image.open(recettes[index][2])
                         image_recette = ImageTk.PhotoImage(image_recette.resize((250, 250)))
-                        setattr(CategoryPage, "image_recette_"+str(index), image_recette)
-                        images.append(getattr(CategoryPage, "image_recette_"+str(index)))
-                        # print(self.image_recette)
+                        setattr(CategoryPage, "image_recette_" + str(index), image_recette)
+                        images.append(getattr(CategoryPage, "image_recette_" + str(index)))
                         btns.append((Button(self.recette_frame, text=recettes[index][0],
-                                                       image=images[index], compound=TOP,font=self.titlesfont,
-                                                       command=lambda m=recettes[index][1]: self.go_to_selected_recipy(
-                                                           m))))
+                                            image=images[index], compound=TOP, width=250, font=self.titlesfont,
+                                            command=lambda m=recettes[index][1]: self.go_to_selected_recipy(
+                                                m))))
                         indexes.append((i, j))
-                        #self.image_bouton.grid(row=i, column=j)
                         index += 1
 
             for i in range(len(btns)):
