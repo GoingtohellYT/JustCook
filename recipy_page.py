@@ -231,16 +231,16 @@ class RecipyPage:
         except TypeError:
             self.image_fav = "./images/fav.png"
 
-def add_fav(self):
-     """
-    Fonction qui permet d'ajouter d'ajouter / retirer la recette des favoris
-    """
-    if not updateDB.check_favoris(updateDB.current_user, self.id):
-        try:
-             updateDB.add_favori(self.id)
-        except AssertionError:
-             print("Impossible d'ajouter le favoris")
-    else:
-        updateDB.remove_fav(self.id)
+    def add_fav(self):
+        """
+        Fonction qui permet d'ajouter d'ajouter / retirer la recette des favoris
+        """
+        if not updateDB.check_favoris(updateDB.current_user, self.id):
+            try:
+                updateDB.add_favori(self.id)
+            except AssertionError:
+                print("Impossible d'ajouter le favoris")
+        else:
+            updateDB.remove_fav(self.id)
 
 # recipy = RecipyPage(0)
