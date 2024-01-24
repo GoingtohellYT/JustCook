@@ -219,11 +219,13 @@ class RecipyPage:
         fonction qui affiche un coeur vide sur le bouton favori si la recette n'est pas dans les favoris, un coeur rempli autrement
         """
         #assert updateDB.current_user != None
-        
-        if updateDB.check_favoris(updateDB.current_user,self.id):
+                try:
+            if updateDB.check_favoris(updateDB.current_user,self.id):
+                self.image_fav = "./images/fav.png"
+            else:
+                self.image_fav = "./images/fav_filled.png"
+        except TypeError:
             self.image_fav = "./images/fav.png"
-        else:
-            self.image_fav = "./images/fav_filled.png"
         
     def add_fav(self):
 
