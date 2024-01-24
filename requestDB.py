@@ -26,6 +26,13 @@ class Request:
     def get_recettes(self, table, element, recette):
         """
         Fonction qui permet d'obtenir toutes les recettes d'une catégorie
+
+        Pré-conditions :
+            table est du type string est correspond à une table existante
+            element est l'élément qui doit être retourné
+            recette est le nom de la catégorie de recettes
+        Retourne :
+            Une liste de tuples qui correspondent aux différentes recettes
         """
         self.c.execute(f"SELECT {element} FROM {table} WHERE categories LIKE '%{recette}%';")
         return self.c.fetchall()
@@ -33,11 +40,16 @@ class Request:
     def get_recette_info(self, recette_id):
         """
         Fonction qui renvoie toutes les informations sur une recette
+
+        Pré-conditions :
+            recette_id est du type int et correspond à l'id d'une recette
+        Retourne :
+            Une liste contenant un tuple qui lui-même contient les informations de la recette
         """
         self.c.execute(f"SELECT * FROM recettes WHERE id = {recette_id}")
         return self.c.fetchall()[0]
 
-    def get(self, attribut, table, condition1=None, condition2= None):
+    def get(self, attribut, table, condition1=None, condition2=None):
         """
         Fonction qui permet d'accéder à la base de données en fonction d'une condition qui dépend de l'attribut
         """
