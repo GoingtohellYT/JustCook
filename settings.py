@@ -185,9 +185,17 @@ class Settings:
         self.screen.destroy()
 
     def get_fav(self, user):
+        """
+        Fonction qui permet de récupérer tous les id des recettes présents dans la table favoris et mis par l'utilisateur qui utilise l'app
+        Prend en paramètre l'email de l'utilisateur connecté sous forme de string
+        REnvoie une liste avec tous les id des recettes
+        """
         return requestDB.request.get("id_recette", "favoris", "email", f'"{user}"')
 
     def show_fav(self):
+        """
+        Permet de faire afficher les recettes mise en favoris par 'utilisateur
+        """
         try:
             fav = self.get_fav(updateDB.current_user)
             print(fav)
@@ -195,7 +203,7 @@ class Settings:
             for i in range(len(fav)):
                 nom = requestDB.request.get_recette_info(fav[i][0])
                 #add le nom de la recette avec le lien vers cette recette à l'affichage
-                recette = Label(self.corps, text=f"Favoris n°{i} : {nom[1]}")
+                recette = Label(self.corps, text=f"Favoris n°{i+1} : {nom[1]}")
                 recette.grid(column=0, row=i+3)
                 btn_rectte = Button(self.corps, text='Accéder à la recette', command=lambda r_id=fav[i][0]: recipy_page.RecipyPage(r_id, self.is_night_mode), background=self.main_color)
                 self.main_widgets.append(btn_rectte)
