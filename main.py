@@ -252,7 +252,7 @@ class Login:
         self.homepage = homepage
 
         self.root = Toplevel()
-        self.root.geometry("240x100")
+        self.root.geometry("240x130")
         self.root.title('Login')
         self.root.resizable(0,0)
 
@@ -260,23 +260,33 @@ class Login:
         self.root.columnconfigure(0, weight=1)
         self.root.columnconfigure(1, weight=3)
 
-        # username
+        self.pseudo_label = ttk.Label(self.root, text="Pseudo (new only):")
+        self.pseudo_label.grid(column=0, row=0, sticky=W, padx=5, pady=5)
+
+        self.pseudo_entry = ttk.Entry(self.root)
+        self.pseudo_entry.grid(column=1, row=0, sticky=E, padx=5, pady=5)
+
+        # email
         self.username_label = ttk.Label(self.root, text="Email:")
-        self.username_label.grid(column=0, row=0, sticky=W, padx=5, pady=5)
+        self.username_label.grid(column=0, row=1, sticky=W, padx=5, pady=5)
 
         self.username_entry = ttk.Entry(self.root)
-        self.username_entry.grid(column=1, row=0, sticky=E, padx=5, pady=5)
+        self.username_entry.grid(column=1, row=1, sticky=E, padx=5, pady=5)
 
         # password
         self.password_label = ttk.Label(self.root, text="Password:")
-        self.password_label.grid(column=0, row=1, sticky=W, padx=5, pady=5)
+        self.password_label.grid(column=0, row=2, sticky=W, padx=5, pady=5)
 
         self.password_entry = ttk.Entry(self.root, show="*")
-        self.password_entry.grid(column=1, row=1, sticky=E, padx=5, pady=5)
+        self.password_entry.grid(column=1, row=2, sticky=E, padx=5, pady=5)
 
         # login button
         self.login_button = ttk.Button(self.root, text="Login", command=self.log)
-        self.login_button.grid(column=1, row=3, sticky=E, padx=5, pady=5)
+        self.login_button.grid(column=1, row=4, sticky=E, padx=5, pady=5)
+
+        # new user button
+        self.new_account = ttk.Button(self.root, text="Create account", command=self.create_account)
+        self.new_account.grid(column=0, row=4, sticky=E, padx=5)
 
         self.root.mainloop()
 
@@ -297,8 +307,23 @@ class Login:
                 print("switch to nightmode")
         self.root.destroy()
 
-class Add_recette:
+    def create_account(self):
+        """
+        Fonction qui crée un nouveau compte utilisateur et log in ce nouvel utilisateur
+        """
+        email = self.username_entry.get()
+        pwd = self.password_entry.get()
+        pseudo = self.pseudo_entry.get()
 
+        try:
+            updateDB.add_user(pseudo, pwd, email)
+            self.log()
+        except:
+            print("impossible de créer un nouveau compte ! \n"
+                  "Vérifiez la validité des informations ou que vous n'ayez pas déjà un compte !")
+
+
+class Add_recette:
     def __init__(self, homepage, account):
 
         self.homepage = homepage

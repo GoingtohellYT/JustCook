@@ -66,10 +66,6 @@ class CategoryPage:
         self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
         self.lbl_logo.config(background=self.main_color, padding=(100, 0), font=self.logofont)
 
-        self.recette_cherchee = ""
-        self.barre_recherche = Entry(self.screen, textvariable=self.recette_cherchee, background="white")
-        self.barre_recherche.grid(row=0, column=2, columnspan=2, padx=250, sticky=EW)
-
         # ________________Contenu principal de la fenêtre________________#
 
         self.recette_frame = Frame(self.screen, background=self.bg_color)

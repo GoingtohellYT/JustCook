@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 import sqlite3
+import os
 
 import requestDB
-import updateDB
 import updateDB
 import recipy_page
 from requestDB import request
@@ -24,10 +24,21 @@ class Settings:
 
         self.main_widgets = []
         self.background_widgets = []
+
+        if os.name == "nt":
+            self.titlesfont = ("MV Boli", 12)
+            self.logofont = ("MV Boli", 45)
+        elif os.name == "posix":
+            self.titlesfont = ("Z003", 12)
+            self.logofont = ("Z003", 45)
+        else:
+            self.titlesfont = ("Times New Roman", 12)
+            self.logofont = ("Times New Roman", 45)
+
         ##=================================================================##L'ECRAN##=================================================================##
         self.screen = Toplevel()
         self.screen.title("JustCook - settings")
-        self.screen.geometry("1280x720")
+        self.screen.geometry("750x720")
         self.screen.resizable(0, 0)
         self.screen.configure(background=self.bg_color)
 
@@ -37,8 +48,9 @@ class Settings:
         self.screen.columnconfigure(3, weight=3)
 
         self.screen.rowconfigure(0, weight=0)
-        self.screen.rowconfigure(1, weight=8)
-        self.screen.rowconfigure(2, weight=0)
+        self.screen.rowconfigure(1, weight=0)
+        self.screen.rowconfigure(2, weight=5)
+        self.screen.rowconfigure(3, weight=0)
 
         self.background_widgets.append(self.screen)
 
@@ -54,12 +66,21 @@ class Settings:
         self.main_widgets.append(self.header)
         self.header.grid(row=0, column=0, columnspan=4)
 
-        self.lbl_logo = ttk.Label(self.screen, text="JustCook")
+        self.lbl_logo = ttk.Label(self.screen, text="JustCook", font=self.logofont)
         self.main_widgets.append(self.lbl_logo)
         self.lbl_logo.grid(row=0, column=0, columnspan=4, sticky=NSEW)
-        self.lbl_logo.config(background=self.main_color, padding=(100, 0), font=("Z003", 45))
+        self.lbl_logo.config(background=self.main_color, padding=(100, 0))
 
         # ---------------Le corps-----------------#
+        self.username = request.get("pseudo", "users", "email", f'"{updateDB.current_user}"')
+        self.salutations = f"Bonjour {self.username[0][0]} !"
+        print(self.salutations)
+
+        # Greetings
+        self.bonjour = Label(self.screen, text=self.salutations, font=self.logofont, background=self.main_color)
+        self.bonjour.grid(row=1, column=0, sticky=N, pady=50)
+        self.background_widgets.append(self.bonjour)
+
         self.corps = Frame(self.screen, background=self.bg_color)
 
         self.background_widgets.append(self.corps)
@@ -70,28 +91,30 @@ class Settings:
         self.corps.rowconfigure(0)
         self.corps.rowconfigure(1)
         self.corps.rowconfigure(2)
+        self.corps.rowconfigure(3)
+
 
         # Bouton nightmode
         self.mode_pref = Label(self.corps, text="Nightmode par défaut")
-        self.mode_pref.grid(row=0, column=0, padx=12)
+        self.mode_pref.grid(row=1, column=0, padx=12)
 
         self.set_mode_pref = Button(self.corps, text="", command=lambda: self.toggle("mode"))
-        self.set_mode_pref.grid(row=0, column=1, padx=12)
+        self.set_mode_pref.grid(row=1, column=1, padx=12)
 
         # Bouton stay_logged_in
         self.stay_logged_pref = Label(self.corps, text="Rester connecté")
-        self.stay_logged_pref.grid(row=1, column=0, padx=12)
+        self.stay_logged_pref.grid(row=2, column=0, padx=12)
 
         self.set_stay_logged = Button(self.corps, text="", command=lambda: self.toggle("stay_logged"))
-        self.set_stay_logged.grid(row=1, column=1, padx=12)
+        self.set_stay_logged.grid(row=2, column=1, padx=12)
 
         # Bouton déconnexion
         self.deconnect = Button(self.corps, text="Déconnexion", command=self.deconnect)
-        self.deconnect.grid(row=2, column=0, pady=12)
+        self.deconnect.grid(row=3, column=0, pady=12)
 
         self.set_default_values()
 
-        self.corps.grid(row=1, column=0)
+        self.corps.grid(row=2, column=0, sticky=N, pady=35)
 
         self.show_fav()
 
@@ -99,12 +122,12 @@ class Settings:
 
         self.btn_footer = Button(self.screen, text="Exit", bg=self.main_color, command=self.screen.destroy)
         self.main_widgets.append(self.btn_footer)
-        self.btn_footer.grid(column=2, row=2, sticky=NSEW, columnspan=2)
+        self.btn_footer.grid(column=2, row=3, sticky=NSEW, columnspan=2)
 
         self.btn_night = Button(self.screen, text='Nightmode', command=self.screen_mode_update,
                                 background=self.main_color)
         self.main_widgets.append(self.btn_night)
-        self.btn_night.grid(column=0, row=2, columnspan=2, sticky=NSEW)
+        self.btn_night.grid(column=0, row=3, columnspan=2, sticky=NSEW)
 
         self.screen.mainloop()
 
@@ -204,10 +227,10 @@ class Settings:
                 nom = requestDB.request.get_recette_info(fav[i][0])
                 #add le nom de la recette avec le lien vers cette recette à l'affichage
                 recette = Label(self.corps, text=f"Favoris n°{i+1} : {nom[1]}")
-                recette.grid(column=0, row=i+3)
+                recette.grid(column=0, row=i+4)
                 btn_rectte = Button(self.corps, text='Accéder à la recette', command=lambda r_id=fav[i][0]: recipy_page.RecipyPage(r_id, self.is_night_mode), background=self.main_color)
                 self.main_widgets.append(btn_rectte)
-                btn_rectte.grid(column=1, row=i+3)
+                btn_rectte.grid(column=1, row=i+4)
 
         except sqlite3.OperationalError:
             print("Cet utilisateur n'a pas encore de favoris")
