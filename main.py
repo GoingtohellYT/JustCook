@@ -35,10 +35,13 @@ class Homepage:
         else:
             self.titlesfont = ("Times New Roman",18)
             self.logofont = ("Times New Roman",45)
+
+
         ##=================================================================##L'ECRAN##=================================================================##
 
         self.screen = Tk()
         self.screen.title("JustCook")
+        self.screen.iconbitmap("images/logo.ico")
         self.screen.geometry("1280x720")
         # screen.attributes('-fullscreen', True)  # met l'écren en fullscreen
         self.screen.resizable(0, 0)
@@ -413,7 +416,7 @@ def popupmsg(msg):
     popup = Toplevel()
 
     popup.geometry("200x150")
-    popup.title('ATTENTION /!\ ')
+    popup.title('ATTENTION !')
     popup.resizable()
 
     w = 200  # width for the Tk root
